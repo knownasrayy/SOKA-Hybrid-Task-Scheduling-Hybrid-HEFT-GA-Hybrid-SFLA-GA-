@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "name": "Topcuoglu_2002_10_Task_DAG_4VM",
+    "description": "Standard 10-task, 15-edge heterogeneous DAG benchmark from Topcuoglu et al. (2002)",
+    "taskCount": 10,
+    "vmCount": 4
+  },
+  "vms": [
+    { "id": 0, "name": "VM-1 (1.0x)", "mips": 1000, "ram": 2048, "bw": 1000, "pricePerHour": 0.05 },
+    { "id": 1, "name": "VM-2 (0.5x)", "mips": 500,  "ram": 1024, "bw": 500,  "pricePerHour": 0.03 },
+    { "id": 2, "name": "VM-3 (0.75x)", "mips": 750, "ram": 2048, "bw": 750, "pricePerHour": 0.04 },
+    { "id": 3, "name": "VM-4 (0.25x)", "mips": 250, "ram": 1024, "bw": 250, "pricePerHour": 0.02 }
+  ],
+  "tasks": [
+    { "id": 0, "name": "T1",  "length": 12000, "fileSize": 900,  "outputSize": 900,  "deps": [] },
+    { "id": 1, "name": "T2",  "length": 10000, "fileSize": 900,  "outputSize": 900,  "deps": [0] },
+    { "id": 2, "name": "T3",  "length": 8000,  "fileSize": 600,  "outputSize": 1100, "deps": [0] },
+    { "id": 3, "name": "T4",  "length": 9000,  "fileSize": 500,  "outputSize": 1300, "deps": [0] },
+    { "id": 4, "name": "T5",  "length": 7000,  "fileSize": 700,  "outputSize": 600,  "deps": [0] },
+    { "id": 5, "name": "T6",  "length": 11000, "fileSize": 800,  "outputSize": 700,  "deps": [0] },
+    { "id": 6, "name": "T7",  "length": 6000,  "fileSize": 1100, "outputSize": 800,  "deps": [2] },
+    { "id": 7, "name": "T8",  "length": 9000,  "fileSize": 1300, "outputSize": 500,  "deps": [1, 3, 5] },
+    { "id": 8, "name": "T9",  "length": 13000, "fileSize": 1100, "outputSize": 600,  "deps": [1, 3, 4] },
+    { "id": 9, "name": "T10", "length": 5000,  "fileSize": 800,  "outputSize": 400,  "deps": [6, 7, 8] }
+  ],
+  "edges": [
+    { "from": 0, "to": 1, "dataKb": 900 },
+    { "from": 0, "to": 2, "dataKb": 600 },
+    { "from": 0, "to": 3, "dataKb": 500 },
+    { "from": 0, "to": 4, "dataKb": 700 },
+    { "from": 0, "to": 5, "dataKb": 800 },
+    { "from": 1, "to": 7, "dataKb": 900 },
+    { "from": 1, "to": 8, "dataKb": 800 },
+    { "from": 2, "to": 6, "dataKb": 1100 },
+    { "from": 3, "to": 7, "dataKb": 1300 },
+    { "from": 3, "to": 8, "dataKb": 1100 },
+    { "from": 4, "to": 8, "dataKb": 600 },
+    { "from": 5, "to": 7, "dataKb": 700 },
+    { "from": 6, "to": 9, "dataKb": 800 },
+    { "from": 7, "to": 9, "dataKb": 500 },
+    { "from": 8, "to": 9, "dataKb": 600 }
+  ]
+}

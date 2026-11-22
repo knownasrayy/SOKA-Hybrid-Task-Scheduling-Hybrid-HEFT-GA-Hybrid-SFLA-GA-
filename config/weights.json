@@ -1,0 +1,15 @@
+{
+  "weights": {
+    "makespan": 0.35,
+    "cost": 0.25,
+    "utilization": 0.15,
+    "imbalance": 0.15,
+    "computeMs": 0.10
+  },
+  "fitnessWeights": {
+    "timeWeight": 0.5,
+    "costWeight": 0.5
+  },
+  "evaluationBudget": 10000,
+  "defaultRuns": 30
+}

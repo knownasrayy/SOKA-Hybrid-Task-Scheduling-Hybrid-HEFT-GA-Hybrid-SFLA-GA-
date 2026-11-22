@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "name": "Montage_25_Scientific_Workflow",
+    "description": "Astronomy mosaic workflow abstraction (25 tasks) from Pegasus Benchmark",
+    "taskCount": 25,
+    "vmCount": 4
+  },
+  "vms": [
+    { "id": 0, "name": "VM-1 (Small)",  "mips": 800,  "ram": 1024, "bw": 800,  "pricePerHour": 0.04 },
+    { "id": 1, "name": "VM-2 (Medium)", "mips": 1200, "ram": 2048, "bw": 1200, "pricePerHour": 0.07 },
+    { "id": 2, "name": "VM-3 (Large)",  "mips": 1800, "ram": 4096, "bw": 1800, "pricePerHour": 0.12 },
+    { "id": 3, "name": "VM-4 (XLarge)", "mips": 2600, "ram": 8192, "bw": 2600, "pricePerHour": 0.20 }
+  ],
+  "tasks": [
+    { "id": 0, "name": "mProject_0", "length": 5200, "fileSize": 200, "outputSize": 300, "deps": [] },
+    { "id": 1, "name": "mProject_1", "length": 4800, "fileSize": 210, "outputSize": 290, "deps": [] },
+    { "id": 2, "name": "mProject_2", "length": 5500, "fileSize": 190, "outputSize": 320, "deps": [] },
+    { "id": 3, "name": "mProject_3", "length": 5100, "fileSize": 220, "outputSize": 310, "deps": [] },
+    { "id": 4, "name": "mDiffFit_0", "length": 8600, "fileSize": 300, "outputSize": 150, "deps": [0, 1] },
+    { "id": 5, "name": "mDiffFit_1", "length": 9100, "fileSize": 290, "outputSize": 160, "deps": [1, 2] },
+    { "id": 6, "name": "mDiffFit_2", "length": 8900, "fileSize": 310, "outputSize": 140, "deps": [2, 3] },
+    { "id": 7, "name": "mDiffFit_3", "length": 9400, "fileSize": 320, "outputSize": 170, "deps": [0, 3] },
+    { "id": 8, "name": "mConcatFit", "length": 3400, "fileSize": 150, "outputSize": 400, "deps": [4, 5, 6, 7] },
+    { "id": 9, "name": "mBgModel",   "length": 14200, "fileSize": 400, "outputSize": 600, "deps": [8] },
+    { "id": 10, "name": "mBackground_0", "length": 6100, "fileSize": 300, "outputSize": 280, "deps": [0, 9] },
+    { "id": 11, "name": "mBackground_1", "length": 5900, "fileSize": 290, "outputSize": 270, "deps": [1, 9] },
+    { "id": 12, "name": "mBackground_2", "length": 6300, "fileSize": 320, "outputSize": 300, "deps": [2, 9] },
+    { "id": 13, "name": "mBackground_3", "length": 5800, "fileSize": 310, "outputSize": 290, "deps": [3, 9] },
+    { "id": 14, "name": "mImgtbl", "length": 4200, "fileSize": 280, "outputSize": 350, "deps": [10, 11, 12, 13] },
+    { "id": 15, "name": "mAdd",    "length": 17500, "fileSize": 600, "outputSize": 800, "deps": [14] },
+    { "id": 16, "name": "mShrink", "length": 7200, "fileSize": 800, "outputSize": 400, "deps": [15] },
+    { "id": 17, "name": "mJPEG",   "length": 3100, "fileSize": 400, "outputSize": 200, "deps": [16] },
+    { "id": 18, "name": "mOverlay", "length": 2500, "fileSize": 200, "outputSize": 150, "deps": [17] },
+    { "id": 19, "name": "mArchive_0", "length": 4800, "fileSize": 150, "outputSize": 100, "deps": [18] },
+    { "id": 20, "name": "mArchive_1", "length": 5000, "fileSize": 150, "outputSize": 100, "deps": [18] },
+    { "id": 21, "name": "mVerify_0",  "length": 3800, "fileSize": 100, "outputSize": 50,  "deps": [19] },
+    { "id": 22, "name": "mVerify_1",  "length": 3900, "fileSize": 100, "outputSize": 50,  "deps": [20] },
+    { "id": 23, "name": "mIndex",     "length": 2900, "fileSize": 100, "outputSize": 80,  "deps": [21, 22] },
+    { "id": 24, "name": "mFinalize",  "length": 1800, "fileSize": 80,  "outputSize": 20,  "deps": [23] }
+  ]
+}

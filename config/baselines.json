@@ -1,0 +1,40 @@
+{
+  "baselines": [
+    {
+      "id": "sfla_pure",
+      "name": "SFLA Murni",
+      "family": "metaheuristic",
+      "color": "#d97706",
+      "source": "Eusuff & Lansey (2003 / 2006)",
+      "description": "Baseline metaheuristik dari Tugas Presentasi Minggu 6-7. Menggunakan partisi memeplex katak dan update posisi konvensional.",
+      "enabled": true
+    },
+    {
+      "id": "wca_pure",
+      "name": "WCA Murni",
+      "family": "metaheuristic",
+      "color": "#7c3aed",
+      "source": "Eskandar et al. (2012)",
+      "description": "Baseline metaheuristik Water Cycle Algorithm dari Tugas Presentasi Minggu 6-7 berbasis aliran sungai menuju laut dengan evaporasi.",
+      "enabled": true
+    },
+    {
+      "id": "heft_pure",
+      "name": "HEFT Murni",
+      "family": "heuristic",
+      "color": "#2563eb",
+      "source": "Topcuoglu et al. (2002)",
+      "description": "Baseline heuristik list scheduling deterministik berdasarkan upward rank dan Earliest Finish Time (EFT).",
+      "enabled": true
+    },
+    {
+      "id": "ga_pure",
+      "name": "GA Murni",
+      "family": "metaheuristic",
+      "color": "#141414",
+      "source": "Holland (1975) / Goldberg (1989)",
+      "description": "Baseline metaheuristik Genetic Algorithm dengan inisialisasi acak 100%, seleksi turnamen, crossover, dan mutasi.",
+      "enabled": true
+    }
+  ]
+}

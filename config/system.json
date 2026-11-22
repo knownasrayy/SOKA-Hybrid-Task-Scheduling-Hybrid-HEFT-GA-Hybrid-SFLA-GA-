@@ -1,0 +1,46 @@
+{
+  "datacenter": {
+    "name": "SOKA Cloud Datacenter ITS",
+    "architecture": "Heterogeneous Cluster (4 VM Tiers)",
+    "networkBw": 1000,
+    "internalLatency": 0.001
+  },
+  "vms": [
+    {
+      "id": 0,
+      "name": "VM-1 (Micro)",
+      "mips": 500,
+      "ram": 1024,
+      "bw": 500,
+      "pricePerHour": 0.03,
+      "color": "#2f6fdb"
+    },
+    {
+      "id": 1,
+      "name": "VM-2 (Standard)",
+      "mips": 1000,
+      "ram": 2048,
+      "bw": 1000,
+      "pricePerHour": 0.06,
+      "color": "#8b5cf6"
+    },
+    {
+      "id": 2,
+      "name": "VM-3 (High-Compute)",
+      "mips": 1500,
+      "ram": 4096,
+      "bw": 1500,
+      "pricePerHour": 0.10,
+      "color": "#0e9f9e"
+    },
+    {
+      "id": 3,
+      "name": "VM-4 (Ultra-Fast)",
+      "mips": 2500,
+      "ram": 8192,
+      "bw": 2500,
+      "pricePerHour": 0.18,
+      "color": "#64748b"
+    }
+  ]
+}

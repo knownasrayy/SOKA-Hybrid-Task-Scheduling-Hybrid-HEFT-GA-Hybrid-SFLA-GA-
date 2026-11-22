@@ -1,0 +1,67 @@
+[
+  {
+    "id": "aziza2020",
+    "authors": "Aziza, H., & Krichen, S.",
+    "year": 2020,
+    "title": "A hybrid genetic algorithm for scientific workflow scheduling in cloud environment",
+    "journal": "Neural Computing and Applications",
+    "volume": "32",
+    "issue": "18",
+    "pages": "15263–15278",
+    "doi": "https://doi.org/10.1007/s00521-020-04878-8",
+    "pattern": "Pola B (Heuristik HEFT + Metaheuristik GA / Seeding Relay)",
+    "summary": "Memanfaatkan solusi deterministik dan urutan prioritas HEFT untuk membentuk individu benih berkualitas tinggi pada populasi awal GA. Ruang pencarian kemudian dieksplorasi secara global dengan seleksi turnamen, crossover 2-titik, dan mutasi integer untuk menghindari jebakan lokal greedy HEFT."
+  },
+  {
+    "id": "kayalvili2019",
+    "authors": "Kayalvili, S., & Selvam, M.",
+    "year": 2019,
+    "title": "Hybrid SFLA-GA algorithm for an optimal resource allocation in cloud",
+    "journal": "Cluster Computing",
+    "volume": "22",
+    "issue": "Suppl 2",
+    "pages": "3165–3173",
+    "doi": "https://doi.org/10.1007/s10586-018-2011-8",
+    "pattern": "Pola C (Metaheuristik SFLA + Metaheuristik GA / Teamwork)",
+    "summary": "Membagi populasi katak ke dalam beberapa memeplex independen. Di dalam setiap memeplex, operator GA (crossover dan mutasi) diterapkan sebagai mekanisme pencarian lokal untuk meningkatkan variasi genetik dan mencegah konvergensi dini lokal optima SFLA konvensional sebelum fase pengocokan global (global shuffle)."
+  },
+  {
+    "id": "topcuoglu2002",
+    "authors": "Topcuoglu, H., Hariri, S., & Wu, M. Y.",
+    "year": 2002,
+    "title": "Performance-effective and low-complexity task scheduling for heterogeneous computing",
+    "journal": "IEEE Transactions on Parallel and Distributed Systems",
+    "volume": "13",
+    "issue": "3",
+    "pages": "260–274",
+    "doi": "https://doi.org/10.1109/71.993206",
+    "pattern": "Heuristik Daftar Murni (Baseline)",
+    "summary": "Algoritma HEFT klasik yang menghitung bobot rank upward secara rekursif dari task exit ke task entry, mengurutkan task secara topologis menurun, dan menugaskan setiap task ke VM yang menghasilkan Earliest Finish Time (EFT) dengan insertion policy."
+  },
+  {
+    "id": "eusuff2006",
+    "authors": "Eusuff, M., Lansey, K., & Pasha, F.",
+    "year": 2006,
+    "title": "Shuffled frog-leaping algorithm: a memetic meta-heuristic for discrete optimization",
+    "journal": "Engineering Optimization",
+    "volume": "38",
+    "issue": "2",
+    "pages": "129–154",
+    "doi": "https://doi.org/10.1080/03052150500384759",
+    "pattern": "Metaheuristik Murni (Baseline 1)",
+    "summary": "Algoritma SFLA standar berbasis perilaku memetik kawanan katak mencari makan di kolam teratai. Menggabungkan pencarian lokal pada subkelompok memeplex dan pertukaran informasi global melalui pengocokan (shuffling)."
+  },
+  {
+    "id": "eskandar2012",
+    "authors": "Eskandar, H., Sadollah, A., Bahreininejad, A., & Hamdi, M.",
+    "year": 2012,
+    "title": "Water cycle algorithm–A novel metaheuristic optimization method for solving constrained engineering problems",
+    "journal": "Computers & Structures",
+    "volume": "110",
+    "issue": "",
+    "pages": "151–166",
+    "doi": "https://doi.org/10.1016/j.compstruc.2012.07.010",
+    "pattern": "Metaheuristik Murni (Baseline 2)",
+    "summary": "Algoritma siklus air yang memodelkan aliran sungai dan anak sungai menuju laut dengan proses evaporasi dan hujan untuk meloloskan solusi dari optima lokal."
+  }
+]

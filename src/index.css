@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ITS Brand Palette 2026 */
+  --its-navy: #192841;
+  --its-dark: #0b132b;
+  --its-blue: #127bbe;
+  --its-blue-dark: #233f7c;
+  --its-blue-light: #75bde0;
+  --its-gold: #fdbb16;
+  --its-silver: #f3f4f6;
+  --its-tosca: #12b0a2;
+  --its-brick: #b31e23;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0b132b;
+  color: #f3f4f6;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Custom Cybernetic Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #192841;
+}
+::-webkit-scrollbar-thumb {
+  background: #127bbe;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #75bde0;
+}
+
+/* Glassmorphism ITS Cards */
+.its-glass {
+  background: rgba(25, 40, 65, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(117, 189, 224, 0.28);
+  box-shadow: 0 8px 32px 0 rgba(11, 19, 43, 0.45);
+}
+
+.its-glass-heavy {
+  background: rgba(11, 19, 43, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(117, 189, 224, 0.35);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55), 0 0 20px rgba(18, 123, 190, 0.2);
+}
+
+.its-glass-gold {
+  background: rgba(253, 187, 22, 0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(253, 187, 22, 0.45);
+  box-shadow: 0 0 25px rgba(253, 187, 22, 0.2);
+}
+
+.its-glass-blue {
+  background: rgba(18, 123, 190, 0.14);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(18, 123, 190, 0.5);
+  box-shadow: 0 0 25px rgba(18, 123, 190, 0.25);
+}
+
+/* Secondary Button */
+.its-btn-secondary {
+  background: rgba(25, 40, 65, 0.85);
+  border: 1px solid rgba(117, 189, 224, 0.35);
+  color: #f3f4f6;
+  transition: all 0.15s ease;
+}
+.its-btn-secondary:hover {
+  background: rgba(35, 63, 124, 0.9);
+  border-color: #127bbe;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(18, 123, 190, 0.4);
+}
+
+/* Backward-compatible ITS Mappings for legacy utility classes */
+.border-neo {
+  border: 1px solid rgba(117, 189, 224, 0.3) !important;
+}
+.border-neo-thick {
+  border: 1.5px solid rgba(18, 123, 190, 0.5) !important;
+}
+.shadow-neo,
+.shadow-neo-sm,
+.shadow-neo-lg {
+  box-shadow: 0 8px 24px 0 rgba(11, 19, 43, 0.5), 0 0 15px rgba(18, 123, 190, 0.15) !important;
+}
+.shadow-neo-btn {
+  box-shadow: 0 4px 12px 0 rgba(11, 19, 43, 0.4) !important;
+}
+
+/* Automatic conversion of light paper/white blocks into sleek ITS cyber-glass */
+.bg-paper,
+.bg-paper-2,
+.bg-white {
+  background-color: rgba(25, 40, 65, 0.72) !important;
+  color: #f3f4f6;
+}
+
+.text-ink {
+  color: #f3f4f6 !important;
+}
+.text-muted {
+  color: #75bde0 !important;
+}
+.border-ink {
+  border-color: rgba(117, 189, 224, 0.35) !important;
+}
+.border-line {
+  border-color: rgba(117, 189, 224, 0.2) !important;
+}
+.bg-now {
+  background-color: #fdbb16 !important;
+  color: #0b132b !important;
+}
+
+/* Button & Hover Effects */
+.its-btn-primary {
+  background: linear-gradient(135deg, #127bbe, #233f7c);
+  border: 1px solid rgba(117, 189, 224, 0.5);
+  color: #ffffff;
+  transition: all 0.15s ease;
+}
+.its-btn-primary:hover {
+  background: linear-gradient(135deg, #26aee4, #127bbe);
+  box-shadow: 0 0 15px rgba(18, 123, 190, 0.6);
+  transform: translateY(-1px);
+}
+
+.its-btn-gold {
+  background: linear-gradient(135deg, #fdbb16, #e5a70f);
+  border: 1px solid #ffd700;
+  color: #0b132b;
+  font-weight: 800;
+  transition: all 0.15s ease;
+}
+.its-btn-gold:hover {
+  background: linear-gradient(135deg, #ffd700, #fdbb16);
+  box-shadow: 0 0 18px rgba(253, 187, 22, 0.7);
+  transform: translateY(-1px);
+}
+
+/* Highlight Underline */
+.highlight-its-gold {
+  background: linear-gradient(transparent 65%, rgba(253, 187, 22, 0.35) 65%);
+  padding: 0 4px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
