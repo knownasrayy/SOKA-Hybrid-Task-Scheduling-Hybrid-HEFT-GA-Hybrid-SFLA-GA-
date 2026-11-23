@@ -206,7 +206,7 @@ export const DeckShell: React.FC = () => {
   const currentNotes = SPEAKER_NOTES[currentSlide];
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-its-cyber overflow-hidden select-none relative font-sans text-its-navy">
+    <div className="h-screen h-[100dvh] w-screen flex flex-col bg-its-cyber overflow-hidden select-none relative font-sans text-its-navy">
       {/* Persistent Sunlit 3D Floating Archipelago Canvas */}
       {!is2DFallback && (
         <Canvas3D
@@ -380,6 +380,7 @@ export const DeckShell: React.FC = () => {
             setViewMode('ppt');
           }}
           onOpenDiagramModal={() => setShowDiagramModal(true)}
+          isExploreMode={isExploreMode}
         />
       )}
 
