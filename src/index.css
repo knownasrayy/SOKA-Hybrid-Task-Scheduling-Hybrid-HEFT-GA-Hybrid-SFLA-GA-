@@ -162,11 +162,30 @@ body {
   color: #102344 !important;
 }
 
-/* Highlight Underline */
+/* ITS 2026 Keynote Studio Frame & Subtle Blueprint Grid */
+.its-keynote-frame {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1.5px solid rgba(18, 123, 190, 0.24);
+  box-shadow: 0 24px 60px rgba(16, 35, 68, 0.16), 0 4px 16px rgba(18, 123, 190, 0.08);
+  color: #102344;
+}
+
+.its-dot-grid {
+  background-image: radial-gradient(rgba(18, 123, 190, 0.12) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Highlight Accent (Modern ITS Gradient instead of Yellow Marker) */
 .highlight-its-gold {
-  background: linear-gradient(transparent 62%, rgba(253, 187, 22, 0.45) 62%);
-  padding: 0 4px;
-  border-radius: 3px;
+  background: linear-gradient(90deg, #243f81, #127bbe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  border-bottom: 2px solid rgba(253, 187, 22, 0.85);
+  padding-bottom: 1px;
+  font-weight: 900;
 }
 
 /* Animations */

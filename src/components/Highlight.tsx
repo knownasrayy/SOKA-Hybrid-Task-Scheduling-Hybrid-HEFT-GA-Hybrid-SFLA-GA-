@@ -12,15 +12,15 @@ export const Highlight: React.FC<HighlightProps> = ({
   className = ''
 }) => {
   const colorMap = {
-    yellow: 'text-its-gold bg-its-gold/15 border border-its-gold/30',
-    orange: 'text-its-crusta bg-its-crusta/15 border border-its-crusta/30',
-    green: 'text-its-tosca bg-its-tosca/15 border border-its-tosca/30',
-    blue: 'text-its-blue-light bg-its-blue/20 border border-its-blue-light/30'
+    yellow: 'bg-gradient-to-r from-its-cover via-its-blue to-sky-500 bg-clip-text text-transparent border-b-2 border-its-gold/80',
+    orange: 'bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent border-b-2 border-amber-400/80',
+    green: 'bg-gradient-to-r from-teal-700 to-emerald-500 bg-clip-text text-transparent border-b-2 border-teal-400/80',
+    blue: 'bg-gradient-to-r from-its-cover to-its-blue bg-clip-text text-transparent border-b-2 border-its-blue/50'
   };
 
   return (
     <span
-      className={`font-extrabold px-1.5 py-0.5 rounded-md inline-block tracking-tight ${colorMap[color]} ${className}`}
+      className={`font-black pb-0.5 inline-block tracking-tight ${colorMap[color]} ${className}`}
     >
       {children}
     </span>

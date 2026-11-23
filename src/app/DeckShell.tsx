@@ -384,73 +384,192 @@ export const DeckShell: React.FC = () => {
         />
       )}
 
-      {/* MODE 2: VERSI PPT (25 SLIDE PRESENTASI LENGKAP) */}
+      {/* MODE 2: VERSI PPT — ITS 2026 KEYNOTE STUDIO (DISTINCT FROM LECTURER DECK) */}
       {viewMode === 'ppt' && (
-        <>
-          <main className="flex-1 min-h-0 relative z-10 flex items-center justify-center px-4 py-3 md:px-6 md:py-4 overflow-hidden pointer-events-none">
-            <div
-              className={`w-full h-full max-w-6xl max-h-full its-glass-heavy rounded-2xl p-5 md:p-7 flex flex-col overflow-y-auto transition-all duration-300 pointer-events-auto ${
-                isOverlayMinimized ? 'opacity-10 scale-95 hover:opacity-95' : 'opacity-100 scale-100'
-              }`}
-            >
-              <CurrentComponent />
-            </div>
-          </main>
+        <div className="flex-1 min-h-0 relative z-10 flex flex-col overflow-hidden">
+          <div className="flex-1 min-h-0 flex items-stretch gap-4 px-3 pt-3 pb-16 md:px-6 md:pt-4 md:pb-20 overflow-hidden pointer-events-none">
+            {/* Left Vertical Chapter Rail (Desktop XL) */}
+            {!isHudHidden && !isOverlayMinimized && (
+              <aside className="hidden xl:flex flex-col w-52 shrink-0 its-glass-heavy rounded-2xl overflow-hidden pointer-events-auto border border-its-blue/25 shadow-its-card">
+                <div className="px-3.5 py-2.5 bg-gradient-to-r from-its-cover to-its-blue text-white flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-extrabold uppercase tracking-widest">Alur Presentasi</span>
+                  <span className="font-mono text-[10px] font-black px-1.5 py-0.5 rounded bg-its-gold text-its-navy">
+                    {currentSlide}/{totalSlides}
+                  </span>
+                </div>
 
-          {/* Clean, Spacious Bottom Navigation Bar (Zero Overlap!) */}
-          {!isHudHidden && (
-            <footer className="relative z-30 h-16 shrink-0 px-5 its-glass-heavy border-t border-its-blue/20 flex items-center justify-between gap-4">
-              {/* Prev Button */}
-              <button
-                onClick={prevSlide}
-                disabled={currentSlide <= 1}
-                className="flex items-center gap-1.5 px-4 py-2 its-btn-secondary rounded-xl font-mono text-xs font-bold disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer shrink-0"
+                <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1.5">
+                  {[
+                    { code: 'A', label: 'Pendahuluan', start: 1, end: 5 },
+                    { code: 'B', label: 'Hybrid HEFT-GA', start: 6, end: 10 },
+                    { code: 'C', label: 'Hybrid SFLA-GA', start: 11, end: 15 },
+                    { code: 'D', label: 'Eksperimen & Hasil', start: 16, end: 22 },
+                    { code: 'E', label: 'Demo Real World', start: 23, end: 25 }
+                  ].map((sec) => {
+                    const isActive = currentSlide >= sec.start && currentSlide <= sec.end;
+                    const isPassed = currentSlide > sec.end;
+                    return (
+                      <div
+                        key={sec.code}
+                        className={`rounded-xl p-2 transition-all border ${
+                          isActive
+                            ? 'bg-sky-50/95 border-its-blue/40 shadow-sm'
+                            : 'bg-white/50 border-transparent hover:bg-white/90 hover:border-its-blue/20'
+                        }`}
+                      >
+                        <button
+                          onClick={() => goToSlide(sec.start)}
+                          className="w-full text-left flex items-center gap-2 cursor-pointer"
+                        >
+                          <span
+                            className={`w-6 h-6 rounded-lg flex items-center justify-center font-mono text-[11px] font-black shrink-0 ${
+                              isActive
+                                ? 'bg-its-cover text-its-gold shadow-sm'
+                                : isPassed
+                                ? 'bg-its-blue/15 text-its-blue'
+                                : 'bg-slate-100 text-its-silver'
+                            }`}
+                          >
+                            {sec.code}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <div
+                              className={`text-xs font-bold truncate ${
+                                isActive ? 'text-its-navy' : 'text-its-navy/75'
+                              }`}
+                            >
+                              {sec.label}
+                            </div>
+                            <div className="text-[10px] font-mono text-its-silver">
+                              Slide {sec.start}–{sec.end}
+                            </div>
+                          </div>
+                        </button>
+
+                        {isActive && (
+                          <div className="mt-2 pt-1.5 border-t border-its-blue/15 flex flex-wrap gap-1">
+                            {SLIDES_REGISTRY.slice(sec.start - 1, sec.end).map((s) => (
+                              <button
+                                key={s.id}
+                                onClick={() => goToSlide(s.id)}
+                                title={s.title}
+                                className={`h-5 px-1.5 rounded-md font-mono text-[10px] font-bold transition-all cursor-pointer ${
+                                  s.id === currentSlide
+                                    ? 'bg-its-blue text-white shadow-sm'
+                                    : 'bg-white text-its-navy/70 border border-its-blue/15 hover:border-its-blue hover:text-its-blue'
+                                }`}
+                              >
+                                {s.id}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="p-2.5 border-t border-its-blue/15 bg-sky-50/60">
+                  <button
+                    onClick={() => {
+                      setViewMode('story3d');
+                      setIs2DFallback(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-its-cover text-white hover:bg-its-blue font-mono text-[11px] font-bold transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-its-gold" />
+                    <span>Buka 3D Storyline</span>
+                  </button>
+                </div>
+              </aside>
+            )}
+
+            {/* Main ITS 2026 Keynote Frame */}
+            <main className="flex-1 min-w-0 min-h-0 flex items-center justify-center pointer-events-none">
+              <div
+                className={`w-full h-full max-w-6xl max-h-full its-keynote-frame rounded-3xl flex flex-col overflow-hidden transition-all duration-300 pointer-events-auto relative ${
+                  isOverlayMinimized ? 'opacity-10 scale-95 hover:opacity-95' : 'opacity-100 scale-100'
+                }`}
               >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Prev</span>
-              </button>
+                {/* Top Official ITS Tricolor Accent Ribbon */}
+                <div className="h-1.5 w-full shrink-0 bg-gradient-to-r from-its-cover via-its-blue to-its-gold" />
 
-              {/* Center Progress & Slide Info */}
-              <div className="flex items-center gap-4 flex-1 max-w-2xl min-w-0">
-                <span className="px-2.5 py-1 rounded-lg bg-its-cover text-white font-mono text-xs font-extrabold whitespace-nowrap shrink-0">
-                  {currentSlide.toString().padStart(2, '0')} / {totalSlides}
-                </span>
+                {/* Keynote Frame Subtle Top Metadata Bar */}
+                <div className="px-5 md:px-7 py-2 shrink-0 flex items-center justify-between border-b border-its-blue/10 bg-gradient-to-r from-sky-50/70 via-white/80 to-amber-50/40 text-[11px] font-mono">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-its-blue shrink-0" />
+                    <span className="font-bold text-its-cover uppercase tracking-wider truncate">
+                      {currentSlideObj.section}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2.5 shrink-0 text-its-silver">
+                    <span className="hidden sm:inline font-semibold text-its-blue">ITS · Departemen TI · SOKA 2026</span>
+                    <span className="px-2 py-0.5 rounded-full bg-its-cover/10 text-its-cover font-extrabold">
+                      SLIDE {currentSlide.toString().padStart(2, '0')} / {totalSlides}
+                    </span>
+                  </div>
+                </div>
 
-                <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                  <div className="flex items-center justify-between gap-2 text-xs font-mono">
-                    <span className="truncate font-extrabold text-its-navy">{currentSlideObj.title}</span>
-                    <span className="text-its-blue font-bold whitespace-nowrap hidden sm:inline">{currentSlideObj.section}</span>
-                  </div>
-                  <div className="w-full h-2 bg-sky-100 rounded-full overflow-hidden border border-its-blue/20">
-                    <div
-                      className="h-full bg-gradient-to-r from-its-blue to-its-gold transition-all duration-300 rounded-full"
-                      style={{ width: `${(currentSlide / totalSlides) * 100}%` }}
-                    />
-                  </div>
+                {/* Slide Content Area with Subtle Blueprint Dot-Grid */}
+                <div className="flex-1 min-h-0 overflow-y-auto p-5 md:p-7 its-dot-grid relative">
+                  <CurrentComponent />
                 </div>
               </div>
+            </main>
+          </div>
 
-              {/* Right Shortcuts & Next Button */}
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono text-its-silver">
-                  <kbd className="px-1.5 py-0.5 rounded bg-sky-50 border border-its-blue/25 text-its-navy font-bold">←</kbd>
-                  <kbd className="px-1.5 py-0.5 rounded bg-sky-50 border border-its-blue/25 text-its-navy font-bold">→</kbd>
-                  <span>atau</span>
-                  <kbd className="px-2 py-0.5 rounded bg-sky-50 border border-its-blue/25 text-its-navy font-bold">Spasi</kbd>
+          {/* Floating Navy Capsule Dock (Original Keynote Navigation — Zero Resemblance to Full-Width Footer) */}
+          {!isHudHidden && (
+            <div className="pointer-events-none fixed inset-x-0 bottom-3 md:bottom-4 z-30 flex justify-center px-3">
+              <nav className="pointer-events-auto flex items-center gap-2 sm:gap-3 px-2.5 py-1.5 rounded-full bg-its-navy/95 backdrop-blur-xl text-white border border-its-blue/40 shadow-2xl max-w-full">
+                <button
+                  onClick={prevSlide}
+                  disabled={currentSlide <= 1}
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-its-blue text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0"
+                  title="Slide Sebelumnya (←)"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                <div className="flex items-center gap-2.5 px-1 min-w-0">
+                  <span className="px-2.5 py-0.5 rounded-full bg-its-gold text-its-navy font-mono text-[11px] font-black shrink-0">
+                    {currentSlide.toString().padStart(2, '0')} / {totalSlides}
+                  </span>
+
+                  <div className="hidden sm:flex flex-col min-w-0 max-w-[240px] md:max-w-[320px]">
+                    <span className="text-xs font-bold text-white truncate leading-tight">
+                      {currentSlideObj.title}
+                    </span>
+                    <div className="w-full h-1 mt-1 bg-white/15 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-sky-400 to-its-gold transition-all duration-300 rounded-full"
+                        style={{ width: `${(currentSlide / totalSlides) * 100}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
+
+                <button
+                  onClick={() => setShowGrid(true)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-sky-200 transition-all cursor-pointer shrink-0"
+                  title="Daftar Isi Semua Slide (G)"
+                >
+                  <Grid className="w-3.5 h-3.5" />
+                </button>
 
                 <button
                   onClick={nextSlide}
                   disabled={currentSlide >= totalSlides}
-                  className="flex items-center gap-1.5 px-5 py-2 its-btn-gold rounded-xl font-mono text-xs font-extrabold disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer shadow-its-gold"
+                  className="h-8 px-3.5 rounded-full flex items-center gap-1 bg-its-gold hover:bg-amber-300 text-its-navy font-mono text-xs font-black disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0 shadow-sm"
+                  title="Slide Berikutnya (→ / Spasi)"
                 >
-                  <span>Next</span>
+                  <span className="hidden sm:inline">Lanjut</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
-              </div>
-            </footer>
+              </nav>
+            </div>
           )}
-        </>
+        </div>
       )}
 
       {/* Grid Modal / Table of Contents (G) */}
