@@ -40,13 +40,13 @@ export const RadarChart: React.FC<RadarChartProps> = ({ entities, size = 320 }) 
   };
 
   return (
-    <div className="its-glass rounded-2xl p-4 border border-its-blue/30 shadow-its-card flex flex-col items-center">
-      <div className="w-full flex items-center justify-between text-xs font-mono text-its-silver mb-1 pb-1 border-b border-its-blue/20">
-        <span className="font-bold text-white flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-its-gold animate-pulse" />
+    <div className="its-glass rounded-2xl p-4 border border-its-blue/25 shadow-its-card flex flex-col items-center">
+      <div className="w-full flex items-center justify-between text-xs font-mono text-its-silver mb-1 pb-1 border-b border-its-blue/15">
+        <span className="font-bold text-its-navy flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-its-gold" />
           Perbandingan Multi-Dimensi (Radar)
         </span>
-        <span className="text-its-blue-light">Nilai Ternormalisasi [0..1]</span>
+        <span className="text-its-blue font-semibold">Nilai Ternormalisasi [0..1]</span>
       </div>
 
       <svg width={size} height={size} className="overflow-visible my-2">
@@ -63,7 +63,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({ entities, size = 320 }) 
               key={lIdx}
               points={pts}
               fill="none"
-              stroke="rgba(117,189,224,0.2)"
+              stroke="rgba(18,123,190,0.18)"
               strokeWidth={1}
             />
           );
@@ -79,13 +79,13 @@ export const RadarChart: React.FC<RadarChartProps> = ({ entities, size = 320 }) 
 
           return (
             <g key={axis.key}>
-              <line x1={center} y1={center} x2={edge.x} y2={edge.y} stroke="rgba(117,189,224,0.3)" strokeWidth={1} />
+              <line x1={center} y1={center} x2={edge.x} y2={edge.y} stroke="rgba(18,123,190,0.25)" strokeWidth={1} />
               <text
                 x={lx}
                 y={ly}
                 textAnchor="middle"
                 dominantBaseline="central"
-                className="font-mono text-[10px] font-bold fill-its-silver"
+                className="font-mono text-[10px] font-bold fill-its-navy"
               >
                 {axis.label}
               </text>
@@ -108,21 +108,20 @@ export const RadarChart: React.FC<RadarChartProps> = ({ entities, size = 320 }) 
               key={eIdx}
               points={pts}
               fill={entity.color}
-              fillOpacity={0.25}
+              fillOpacity={0.22}
               stroke={entity.color}
               strokeWidth={2.5}
-              style={{ filter: `drop-shadow(0 0 6px ${entity.color}66)` }}
             />
           );
         })}
       </svg>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-its-blue/20 text-xs font-mono">
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-its-blue/15 text-xs font-mono">
         {entities.map((e, idx) => (
-          <div key={idx} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-its-darkNavy/60 border border-its-blue/30 text-its-silver">
-            <span className="w-2.5 h-2.5 rounded-full shadow-its-glow" style={{ backgroundColor: e.color }} />
-            <span className="font-semibold text-white">{e.name}</span>
+          <div key={idx} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-its-slate border border-its-blue/20 text-its-navy">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: e.color }} />
+            <span className="font-semibold text-its-navy">{e.name}</span>
           </div>
         ))}
       </div>

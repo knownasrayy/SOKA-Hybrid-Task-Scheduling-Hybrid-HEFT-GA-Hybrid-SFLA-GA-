@@ -25,12 +25,12 @@ export const Stepper: React.FC<StepperProps> = ({
   onChangeSpeed
 }) => {
   return (
-    <div className="flex items-center justify-between gap-3 p-2.5 its-glass border border-its-blue-light/30 rounded-xl shadow-its-card">
+    <div className="flex items-center justify-between gap-3 p-2.5 its-glass rounded-xl">
       <div className="flex items-center gap-1.5">
         <button
           onClick={onPrev}
           disabled={currentStep <= 1}
-          className="p-1.5 border border-its-blue-light/40 rounded-lg bg-its-navy text-its-silver disabled:opacity-30 disabled:cursor-not-allowed hover:bg-its-blue transition-colors cursor-pointer"
+          className="p-1.5 rounded-lg its-btn-secondary disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
           title="Langkah Sebelumnya (←)"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -48,7 +48,7 @@ export const Stepper: React.FC<StepperProps> = ({
         <button
           onClick={onNext}
           disabled={currentStep >= totalSteps}
-          className="p-1.5 border border-its-blue-light/40 rounded-lg bg-its-navy text-its-silver disabled:opacity-30 disabled:cursor-not-allowed hover:bg-its-blue transition-colors cursor-pointer"
+          className="p-1.5 rounded-lg its-btn-secondary disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
           title="Langkah Berikutnya (→)"
         >
           <ChevronRight className="w-4 h-4" />
@@ -56,15 +56,15 @@ export const Stepper: React.FC<StepperProps> = ({
 
         <button
           onClick={onReset}
-          className="p-1.5 border border-its-blue-light/30 rounded-lg bg-its-navy/80 hover:bg-its-blue/40 text-its-silver transition-colors cursor-pointer ml-1"
+          className="p-1.5 rounded-lg its-btn-secondary cursor-pointer ml-1"
           title="Reset Langkah"
         >
-          <RotateCcw className="w-4 h-4 text-its-blue-light" />
+          <RotateCcw className="w-4 h-4 text-its-blue" />
         </button>
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="font-mono text-xs font-bold text-its-silver">
+        <span className="font-mono text-xs font-bold text-its-navy">
           Langkah <span className="bg-its-gold text-its-navy px-1.5 py-0.5 rounded font-black">{currentStep}</span> / {totalSteps}
         </span>
 
@@ -75,8 +75,8 @@ export const Stepper: React.FC<StepperProps> = ({
               onClick={() => onChangeSpeed(s)}
               className={`px-1.5 py-0.5 rounded border ${
                 speed === s
-                  ? 'bg-its-blue text-white border-its-blue-light font-bold'
-                  : 'bg-its-navy border-its-blue-light/30 text-its-blue-light hover:border-its-blue-light'
+                  ? 'bg-its-blue text-white border-its-blue font-bold'
+                  : 'bg-white border-its-blue/25 text-its-navy hover:border-its-blue'
               } cursor-pointer`}
             >
               {s}x

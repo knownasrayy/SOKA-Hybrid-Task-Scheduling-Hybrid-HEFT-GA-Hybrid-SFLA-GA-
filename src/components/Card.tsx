@@ -33,9 +33,9 @@ export const Card: React.FC<CardProps> = ({
                 {badge}
               </span>
             )}
-            {title && <h3 className="font-extrabold text-lg text-its-silver tracking-tight">{title}</h3>}
+            {title && <h3 className="font-extrabold text-lg text-its-navy tracking-tight">{title}</h3>}
           </div>
-          {subtitle && <span className="text-xs font-mono text-its-blue-light">{subtitle}</span>}
+          {subtitle && <span className="text-xs font-mono text-its-blue font-semibold">{subtitle}</span>}
         </div>
       )}
       {children}

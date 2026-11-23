@@ -7,31 +7,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ITS Brand Guideline 2026 Official Palette
+        // ITS Brand Guideline 2026 — Luminous Daylight Edition
         its: {
-          navy: '#192841',         // Biru Navy SIMT / Deep Space
-          dark: '#0B132B',         // Deep Cybernetic Background
-          cover: '#243F81',        // Biru Cover
-          'blue-dark': '#233F7C',  // Biru Tua Logo ITS
-          blue: '#127BBE',         // Biru Tua Lambang ITS (Primary)
-          'blue-light': '#75BDE0', // Biru Muda Lambang ITS
+          navy: '#102344',         // Deep ITS Navy (Primary Ink / Text)
+          dark: '#0B132B',         // Dark Accent
+          darkNavy: '#192841',     // Alias for backward compatibility
+          deepNavy: '#0F1E3A',     // Alias for backward compatibility
+          cyber: '#EAF5FC',        // Bright Daylight Sky Canvas
+          cover: '#243F81',        // Biru Cover ITS
+          'blue-dark': '#1E3A73',  // Biru Tua Logo ITS
+          blue: '#127BBE',         // Biru Lambang ITS (Primary)
+          'blue-light': '#5EB4E0', // Biru Muda Lambang ITS
           sky: '#26AEE4',          // Summer Sky FTK
-          gold: '#FDBB16',         // Kuning Tua Logo / Emas Wijayakusuma
+          gold: '#FDBB16',         // Kuning Emas Wijayakusuma
           fteic: '#FFD700',        // Gold FTEIC
           yellow: '#F6EC1D',       // Kuning Lambang
-          silver: '#F3F4F6',       // Tugu Pahlawan Silver-White
-          slate: '#1E2D4A',        // Card Background
-          glass: 'rgba(25, 40, 65, 0.75)',
-          'glass-border': 'rgba(117, 189, 224, 0.3)',
+          silver: '#334E73',       // Readable Slate-Navy for body copy on light glass
+          slate: '#F1F7FC',        // Soft Ice Card Background
+          glass: 'rgba(255, 255, 255, 0.88)',
+          'glass-border': 'rgba(18, 123, 190, 0.22)',
           // Status & faculties
-          tosca: '#12B0A2',        // FKK Medical Tosca (Safe)
-          brick: '#B31E23',        // FTIRS Fire Bricks (Alert/Penalty)
-          crusta: '#F47D52',       // FV Crusta (Hot/Warn)
+          tosca: '#0D9488',        // FKK Medical Tosca (Safe / SFLA-GA)
+          brick: '#DC2626',        // FTIRS Fire Bricks (Alert/Penalty)
+          crusta: '#EA580C',       // FV Crusta (Hot/Warn)
         },
         // Algorithm specific theme
         heft: '#127BBE',           // ITS Blue
-        sfla: '#12B0A2',           // ITS Medical Tosca / Cyan
-        base1: '#F47D52',          // ITS Crusta
+        sfla: '#0D9488',           // ITS Medical Tosca
+        base1: '#EA580C',          // ITS Crusta
         base2: '#7C3AED',          // Violet
       },
       fontFamily: {
@@ -40,9 +43,10 @@ export default {
         display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
       },
       boxShadow: {
-        'its-glow': '0 0 20px rgba(18, 123, 190, 0.35)',
-        'its-gold-glow': '0 0 25px rgba(253, 187, 22, 0.45)',
-        'its-card': '0 8px 32px 0 rgba(11, 19, 43, 0.37)',
+        'its-glow': '0 4px 20px rgba(18, 123, 190, 0.18)',
+        'its-gold': '0 4px 18px rgba(253, 187, 22, 0.35)',
+        'its-gold-glow': '0 4px 20px rgba(253, 187, 22, 0.35)',
+        'its-card': '0 12px 36px rgba(16, 35, 68, 0.12), 0 2px 8px rgba(18, 123, 190, 0.08)',
       }
     },
   },

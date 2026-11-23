@@ -42,13 +42,13 @@ export const BoxPlotChart: React.FC<BoxPlotChartProps> = ({
   const colWidth = plotW / data.length;
 
   return (
-    <div className="its-glass rounded-2xl p-4 border border-its-blue/30 shadow-its-card">
-      <div className="flex items-center justify-between text-xs font-mono text-its-silver mb-2 border-b border-its-blue/20 pb-2">
-        <span className="font-bold text-white flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-its-gold animate-pulse" />
+    <div className="its-glass rounded-2xl p-4 border border-its-blue/25 shadow-its-card">
+      <div className="flex items-center justify-between text-xs font-mono text-its-silver mb-2 border-b border-its-blue/15 pb-2">
+        <span className="font-bold text-its-navy flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-its-gold" />
           Sebaran Statistik {yLabel} (N=30 Run)
         </span>
-        <span className="text-its-blue-light">Whisker: Min/Max · Box: Mean ± Std</span>
+        <span className="text-its-blue font-semibold">Whisker: Min/Max · Box: Mean ± Std</span>
       </div>
 
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto max-h-[240px]">
@@ -58,8 +58,8 @@ export const BoxPlotChart: React.FC<BoxPlotChartProps> = ({
           const yPos = scaleY(yVal);
           return (
             <g key={i}>
-              <line x1={padL} y1={yPos} x2={width - padR} y2={yPos} stroke="rgba(117,189,224,0.18)" strokeDasharray="3 3" />
-              <text x={padL - 8} y={yPos + 4} textAnchor="end" className="font-mono text-[10px] fill-its-silver/80">
+              <line x1={padL} y1={yPos} x2={width - padR} y2={yPos} stroke="rgba(18,123,190,0.16)" strokeDasharray="3 3" />
+              <text x={padL - 8} y={yPos + 4} textAnchor="end" className="font-mono text-[10px] fill-its-silver">
                 {yVal.toFixed(1)}
               </text>
             </g>
@@ -80,10 +80,10 @@ export const BoxPlotChart: React.FC<BoxPlotChartProps> = ({
           return (
             <g key={idx}>
               {/* Vertical Whisker Line */}
-              <line x1={cx} y1={yMin} x2={cx} y2={yMax} stroke="#75BDE0" strokeWidth={1.5} />
+              <line x1={cx} y1={yMin} x2={cx} y2={yMax} stroke="#243F81" strokeWidth={1.5} />
               {/* Min & Max Whisker Caps */}
-              <line x1={cx - 10} y1={yMin} x2={cx + 10} y2={yMin} stroke="#75BDE0" strokeWidth={1.5} />
-              <line x1={cx - 10} y1={yMax} x2={cx + 10} y2={yMax} stroke="#75BDE0" strokeWidth={1.5} />
+              <line x1={cx - 10} y1={yMin} x2={cx + 10} y2={yMin} stroke="#243F81" strokeWidth={1.5} />
+              <line x1={cx - 10} y1={yMax} x2={cx + 10} y2={yMax} stroke="#243F81" strokeWidth={1.5} />
 
               {/* Box (Mean +- Std) */}
               <rect
@@ -92,22 +92,21 @@ export const BoxPlotChart: React.FC<BoxPlotChartProps> = ({
                 width={40}
                 height={Math.max(4, yMeanBottom - yMeanTop)}
                 fill={item.color}
-                fillOpacity={0.35}
+                fillOpacity={0.28}
                 stroke={item.color}
                 strokeWidth={2}
                 rx={6}
-                style={{ filter: `drop-shadow(0 0 6px ${item.color}55)` }}
               />
 
               {/* Median Line */}
-              <line x1={cx - 20} y1={yMedian} x2={cx + 20} y2={yMedian} stroke="#FDBB16" strokeWidth={2.5} />
+              <line x1={cx - 20} y1={yMedian} x2={cx + 20} y2={yMedian} stroke="#102344" strokeWidth={2.5} />
 
               {/* X Label */}
               <text
                 x={cx}
                 y={height - padB + 16}
                 textAnchor="middle"
-                className="font-mono text-[10px] font-bold fill-white"
+                className="font-mono text-[10px] font-bold fill-its-navy"
               >
                 {item.name}
               </text>

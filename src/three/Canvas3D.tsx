@@ -25,18 +25,32 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
   const sceneRef = useRef<WorldScene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
+  // Keep latest explore mode in ref so event listeners & animation loop always read fresh state
+  const isExploreRef = useRef(isExploreMode);
+  useEffect(() => {
+    isExploreRef.current = isExploreMode;
+    if (isExploreMode) {
+      // Initialize orbit spherical coords smoothly from current camera relative to target
+      const offset = new THREE.Vector3().subVectors(currentPos.current, currentLookAt.current);
+      orbitRadius.current = Math.max(8, Math.min(60, offset.length()));
+      orbitPhi.current = Math.max(0.15, Math.min(Math.PI / 2.05, Math.acos(THREE.MathUtils.clamp(offset.y / (orbitRadius.current || 1), -1, 1))));
+      orbitTheta.current = Math.atan2(offset.x, offset.z);
+    }
+  }, [isExploreMode]);
+
   // Camera animation interpolation state
-  const currentPos = useRef(new THREE.Vector3(0, 14, 26));
-  const targetPos = useRef(new THREE.Vector3(0, 14, 26));
-  const currentLookAt = useRef(new THREE.Vector3(0, 2, 0));
-  const targetLookAt = useRef(new THREE.Vector3(0, 2, 0));
+  const currentPos = useRef(new THREE.Vector3(0, 17, 36));
+  const targetPos = useRef(new THREE.Vector3(0, 17, 36));
+  const currentLookAt = useRef(new THREE.Vector3(0, 2.5, 0));
+  const targetLookAt = useRef(new THREE.Vector3(0, 2.5, 0));
 
   // Mouse orbit controls in Explore mode
   const isDragging = useRef(false);
+  const dragDistance = useRef(0);
   const previousMousePosition = useRef({ x: 0, y: 0 });
   const orbitTheta = useRef(0);
-  const orbitPhi = useRef(Math.PI / 4);
-  const orbitRadius = useRef(25);
+  const orbitPhi = useRef(Math.PI / 3.2);
+  const orbitRadius = useRef(36);
 
   const [hoveredInfo, setHoveredInfo] = useState<RaycastHit | null>(null);
   const [selectedInfo, setSelectedInfo] = useState<RaycastHit | null>(null);
@@ -48,27 +62,25 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
     const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || window.innerHeight;
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({
-      antialias: qualityMode === 'high',
+      antialias: qualityMode !== 'perf',
       powerPreference: 'high-performance'
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, qualityMode === 'high' ? 2 : 1.5));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Scene
     const world = new WorldScene();
     sceneRef.current = world;
 
-    // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 14, 26);
-    camera.lookAt(0, 2, 0);
+    const camera = new THREE.PerspectiveCamera(46, width / height, 0.1, 1000);
+    camera.position.copy(currentPos.current);
+    camera.lookAt(currentLookAt.current);
     cameraRef.current = camera;
 
-    // Raycaster for mouse picking
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -77,18 +89,18 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-      // Handle Explore mode orbit dragging
-      if (isExploreMode && isDragging.current) {
+      if (isExploreRef.current && isDragging.current) {
         const deltaX = e.clientX - previousMousePosition.current.x;
         const deltaY = e.clientY - previousMousePosition.current.y;
+        dragDistance.current += Math.abs(deltaX) + Math.abs(deltaY);
 
         orbitTheta.current -= deltaX * 0.006;
-        orbitPhi.current = Math.max(0.1, Math.min(Math.PI / 2.1, orbitPhi.current + deltaY * 0.006));
+        orbitPhi.current = Math.max(0.15, Math.min(Math.PI / 2.05, orbitPhi.current - deltaY * 0.006));
 
         previousMousePosition.current = { x: e.clientX, y: e.clientY };
+        return;
       }
 
-      // Raycast objects
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(world.getIntersectables(), true);
       if (intersects.length > 0) {
@@ -101,17 +113,20 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
             details: hitObj.userData.details || ''
           };
           setHoveredInfo(hit);
+          renderer.domElement.style.cursor = 'pointer';
           if (onHoverObject) onHoverObject(hit);
           return;
         }
       }
       setHoveredInfo(null);
+      renderer.domElement.style.cursor = isExploreRef.current ? 'grab' : 'default';
       if (onHoverObject) onHoverObject(null);
     };
 
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.button === 0 && isExploreMode) {
+      if (e.button === 0 && isExploreRef.current) {
         isDragging.current = true;
+        dragDistance.current = 0;
         previousMousePosition.current = { x: e.clientX, y: e.clientY };
       }
     };
@@ -121,12 +136,15 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
     };
 
     const handleWheel = (e: WheelEvent) => {
-      if (isExploreMode) {
-        orbitRadius.current = Math.max(8, Math.min(60, orbitRadius.current + e.deltaY * 0.02));
+      if (isExploreRef.current) {
+        e.preventDefault();
+        orbitRadius.current = Math.max(8, Math.min(60, orbitRadius.current + e.deltaY * 0.025));
       }
     };
 
     const handleClick = (e: MouseEvent) => {
+      if (dragDistance.current > 6) return;
+      if (e.target !== renderer.domElement) return;
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -155,9 +173,8 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('click', handleClick);
-    container.addEventListener('wheel', handleWheel);
+    container.addEventListener('wheel', handleWheel, { passive: false });
 
-    // Resize Handler
     const handleResize = () => {
       if (!containerRef.current || !rendererRef.current || !cameraRef.current) return;
       const w = containerRef.current.clientWidth;
@@ -168,28 +185,34 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
     };
     window.addEventListener('resize', handleResize);
 
-    // Render Animation Loop
     let animId: number;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Update scene entities
       world.update(elapsedTime);
 
-      if (isExploreMode) {
-        // Orbit camera calculations
-        const x = targetLookAt.current.x + orbitRadius.current * Math.sin(orbitPhi.current) * Math.sin(orbitTheta.current);
-        const y = targetLookAt.current.y + orbitRadius.current * Math.cos(orbitPhi.current);
-        const z = targetLookAt.current.z + orbitRadius.current * Math.sin(orbitPhi.current) * Math.cos(orbitTheta.current);
-        camera.position.set(x, y, z);
-        camera.lookAt(targetLookAt.current);
+      if (isExploreRef.current) {
+        currentLookAt.current.lerp(targetLookAt.current, 0.08);
+        const x = currentLookAt.current.x + orbitRadius.current * Math.sin(orbitPhi.current) * Math.sin(orbitTheta.current);
+        const y = currentLookAt.current.y + orbitRadius.current * Math.cos(orbitPhi.current);
+        const z = currentLookAt.current.z + orbitRadius.current * Math.sin(orbitPhi.current) * Math.cos(orbitTheta.current);
+        currentPos.current.set(x, y, z);
+        camera.position.copy(currentPos.current);
+        camera.lookAt(currentLookAt.current);
       } else {
-        // Smooth Waypoint Interpolation (lerp)
-        currentPos.current.lerp(targetPos.current, 0.05);
-        currentLookAt.current.lerp(targetLookAt.current, 0.05);
+        // Gentle cinematic breathing parallax around waypoint
+        const driftX = Math.sin(elapsedTime * 0.25) * 0.35;
+        const driftY = Math.cos(elapsedTime * 0.2) * 0.2;
+        const desiredPos = new THREE.Vector3(
+          targetPos.current.x + driftX,
+          targetPos.current.y + driftY,
+          targetPos.current.z
+        );
+        currentPos.current.lerp(desiredPos, 0.055);
+        currentLookAt.current.lerp(targetLookAt.current, 0.06);
         camera.position.copy(currentPos.current);
         camera.lookAt(currentLookAt.current);
       }
@@ -230,13 +253,14 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
   useEffect(() => {
     if (resetKey === 0) return;
     const wp: Waypoint = WAYPOINTS[currentSlide] || WAYPOINTS[1];
-    orbitTheta.current = 0;
-    orbitPhi.current = Math.PI / 4;
-    orbitRadius.current = 25;
     targetPos.current.set(wp.position[0], wp.position[1], wp.position[2]);
     targetLookAt.current.set(wp.target[0], wp.target[1], wp.target[2]);
     currentPos.current.copy(targetPos.current);
     currentLookAt.current.copy(targetLookAt.current);
+    const offset = new THREE.Vector3().subVectors(targetPos.current, targetLookAt.current);
+    orbitRadius.current = offset.length();
+    orbitPhi.current = Math.acos(THREE.MathUtils.clamp(offset.y / (orbitRadius.current || 1), -1, 1));
+    orbitTheta.current = Math.atan2(offset.x, offset.z);
     if (cameraRef.current) {
       cameraRef.current.position.copy(targetPos.current);
       cameraRef.current.lookAt(targetLookAt.current);
@@ -249,40 +273,38 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
     <div className={`relative w-full h-full overflow-hidden ${className}`}>
       <div ref={containerRef} className="w-full h-full" />
 
-      {/* 3D Raycast Tooltip */}
+      {/* 3D Raycast Hover Tooltip (Bright Frosted ITS Style) */}
       {hoveredInfo && (
-        <div className="absolute top-4 left-4 z-30 its-glass border border-its-blue-light/50 px-3.5 py-2 rounded-xl text-xs font-mono shadow-its-glow pointer-events-none fade-in">
-          <div className="font-bold text-its-gold flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-its-gold animate-ping" />
+        <div className="absolute top-16 left-4 z-30 its-glass-heavy border border-its-blue/40 px-3.5 py-2.5 rounded-xl text-xs font-mono shadow-its-card pointer-events-none fade-in max-w-xs">
+          <div className="font-extrabold text-its-blue flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-its-gold" />
             <span>{hoveredInfo.name}</span>
           </div>
-          <div className="text-its-silver text-[11px] mt-0.5">{hoveredInfo.details}</div>
+          <div className="text-its-navy/80 text-[11px] mt-1 leading-snug">{hoveredInfo.details}</div>
+          <div className="text-[10px] text-its-blue font-bold mt-1">Klik objek untuk mengunci fokus kamera</div>
         </div>
       )}
 
-      {/* Selected Entity Inspector Panel (Follow & Telemetry) */}
+      {/* Selected Entity Inspector Panel */}
       {selectedInfo && (
-        <div className="absolute bottom-6 left-6 z-40 its-glass-heavy border border-its-gold/80 px-4 py-3.5 rounded-2xl text-xs font-mono shadow-its-gold max-w-sm fade-in">
-          <div className="flex items-center justify-between gap-3 mb-2 pb-1.5 border-b border-its-gold/30">
+        <div className="absolute top-16 right-4 z-40 its-glass-heavy border-2 border-its-gold px-4 py-3.5 rounded-2xl text-xs font-mono shadow-its-card max-w-sm fade-in">
+          <div className="flex items-center justify-between gap-3 mb-2 pb-1.5 border-b border-its-blue/15">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-its-gold animate-ping" />
-              <span className="font-black text-white text-sm">{selectedInfo.name}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-its-gold animate-pulse" />
+              <span className="font-black text-its-navy text-sm">{selectedInfo.name}</span>
             </div>
             <button
               onClick={() => setSelectedInfo(null)}
-              className="p-1 rounded-lg hover:bg-white/10 text-its-silver hover:text-white cursor-pointer"
+              className="px-1.5 py-0.5 rounded-lg hover:bg-its-slate text-its-silver hover:text-its-navy cursor-pointer font-bold"
               title="Tutup Inspeksi"
             >
               ✕
             </button>
           </div>
-          <div className="text-its-silver text-xs leading-relaxed">{selectedInfo.details}</div>
-          <div className="mt-2.5 pt-2 border-t border-its-blue/20 text-[10px] text-its-blue-light font-bold flex items-center justify-between">
+          <div className="text-its-silver text-xs leading-relaxed font-sans">{selectedInfo.details}</div>
+          <div className="mt-2.5 pt-2 border-t border-its-blue/15 text-[10px] text-its-blue font-bold flex items-center justify-between">
             <span className="uppercase tracking-wider">Tipe: {selectedInfo.type}</span>
-            <span className="text-its-gold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-its-gold" />
-              Kamera Terfokus
-            </span>
+            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">Kamera Terfokus</span>
           </div>
         </div>
       )}

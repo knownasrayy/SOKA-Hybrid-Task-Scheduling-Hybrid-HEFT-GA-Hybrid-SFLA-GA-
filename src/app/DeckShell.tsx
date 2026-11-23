@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SPEAKER_NOTES } from './speakerNotes';
 import { Canvas3D } from '../three/Canvas3D';
 import { StorylineModal } from '../storyline/StorylineModal';
+import { StorylineOverlayDock } from '../storyline/StorylineOverlayDock';
 import {
   ChevronLeft,
   ChevronRight,
@@ -16,8 +17,8 @@ import {
   Pause,
   RotateCcw,
   Eye,
-  Layers,
-  Sparkles
+  Sparkles,
+  Presentation
 } from 'lucide-react';
 
 // Import All 25 Slides
@@ -76,10 +77,12 @@ const SLIDES_REGISTRY = [
 ];
 
 export const DeckShell: React.FC = () => {
+  // Two first-class views: 'story3d' (default full-screen 3D Storyline) vs 'ppt' (25-slide deck)
+  const [viewMode, setViewMode] = useState<'story3d' | 'ppt'>('story3d');
   const [currentSlide, setCurrentSlide] = useState(1);
   const [showGrid, setShowGrid] = useState(false);
   const [showPresenter, setShowPresenter] = useState(false);
-  const [showStoryline, setShowStoryline] = useState(false);
+  const [showDiagramModal, setShowDiagramModal] = useState(false);
   const [isExploreMode, setIsExploreMode] = useState(false);
   const [is2DFallback, setIs2DFallback] = useState(false);
   const [isHudHidden, setIsHudHidden] = useState(false);
@@ -98,7 +101,7 @@ export const DeckShell: React.FC = () => {
     setQualityMode((prev) => (prev === 'high' ? 'perf' : prev === 'perf' ? 'balanced' : 'high'));
   };
 
-  // Handle URL hash sync
+  // Sync URL hash (if user opens #/slide/X directly, switch to PPT mode at that slide)
   useEffect(() => {
     const handleHashChange = () => {
       const match = window.location.hash.match(/#\/slide\/(\d+)/);
@@ -134,15 +137,24 @@ export const DeckShell: React.FC = () => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
+      if (showDiagramModal) return;
 
-      if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
-        e.preventDefault();
-        prevSlide();
-      } else if (e.key === 'g' || e.key === 'G' || e.key === 'Escape') {
+      if (viewMode === 'ppt') {
+        if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+          e.preventDefault();
+          nextSlide();
+        } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+          e.preventDefault();
+          prevSlide();
+        }
+      }
+
+      if (e.key === 'g' || e.key === 'G') {
         setShowGrid((prev) => !prev);
+      } else if (e.key === 'Escape') {
+        setShowGrid(false);
+        setShowPresenter(false);
+        setShowDiagramModal(false);
       } else if (e.key === 'p' || e.key === 'P') {
         setShowPresenter((prev) => !prev);
       } else if (e.key === 'f' || e.key === 'F') {
@@ -158,13 +170,13 @@ export const DeckShell: React.FC = () => {
       } else if (e.key === 'm' || e.key === 'M') {
         cycleQualityMode();
       } else if (e.key === 's' || e.key === 'S') {
-        setShowStoryline((prev) => !prev);
+        setViewMode((m) => (m === 'story3d' ? 'ppt' : 'story3d'));
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentSlide]);
+  }, [currentSlide, viewMode, showDiagramModal]);
 
   // Timer Tick
   useEffect(() => {
@@ -194,8 +206,8 @@ export const DeckShell: React.FC = () => {
   const currentNotes = SPEAKER_NOTES[currentSlide];
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-its-cyber overflow-hidden select-none relative font-sans text-white">
-      {/* 3D WebGL Background Scene */}
+    <div className="h-screen w-screen flex flex-col bg-its-cyber overflow-hidden select-none relative font-sans text-its-navy">
+      {/* Persistent Sunlit 3D Floating Archipelago Canvas */}
       {!is2DFallback && (
         <Canvas3D
           currentSlide={currentSlide}
@@ -210,130 +222,127 @@ export const DeckShell: React.FC = () => {
       {isHudHidden && (
         <button
           onClick={() => setIsHudHidden(false)}
-          className="fixed top-4 right-4 z-50 its-glass border border-its-blue/50 px-3 py-1.5 rounded-xl text-xs font-mono text-its-silver hover:text-white hover:border-its-gold transition-all shadow-its-glow cursor-pointer"
+          className="fixed top-4 right-4 z-50 its-glass-heavy border border-its-blue/40 px-3.5 py-2 rounded-xl text-xs font-mono font-bold text-its-navy hover:border-its-blue shadow-its-card cursor-pointer"
         >
           Tampilkan HUD (H)
         </button>
       )}
 
-      {/* Top Cybernetic Header (ITS Identity 2026) */}
+      {/* Clean Single-Row Top Header (Bright Frosted ITS Identity 2026) */}
       {!isHudHidden && (
-        <header className="relative z-20 h-12 px-5 flex items-center justify-between border-b border-its-blue/30 its-glass text-xs font-mono">
-          <div className="flex items-center gap-3">
-            {/* Official ITS Techno-Shield Wordmark */}
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-its-darkNavy/80 border border-its-blue/40 shadow-its-glow">
-              <span className="w-2.5 h-2.5 rounded-full bg-its-gold animate-pulse" />
-              <span className="font-extrabold text-white tracking-wider text-xs">ITS HYBRIDLAB</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-its-blue text-white font-mono font-bold">SOKA</span>
+        <header className="relative z-30 h-14 shrink-0 px-4 md:px-5 flex items-center justify-between gap-3 border-b border-its-blue/20 its-glass-heavy text-xs font-mono">
+          {/* Left: Official ITS Brand Badge */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-its-cover text-white shadow-sm whitespace-nowrap">
+              <span className="w-2.5 h-2.5 rounded-full bg-its-gold" />
+              <span className="font-extrabold tracking-wider text-xs">ITS HYBRIDLAB</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-its-blue text-white font-bold">SOKA</span>
             </div>
-
-            <span className="text-its-blue-light/30 hidden md:inline">|</span>
-            <span className="hidden md:inline text-its-silver/80 text-xs font-mono truncate max-w-xs">
-              Optimasi Cloud · HEFT-GA vs SFLA-GA
-            </span>
           </div>
 
-          {/* Toolbar Controls */}
-          <div className="flex items-center gap-2">
-            {/* Storyline Mode (Tombol 'S') */}
+          {/* Center: Prominent Two-Mode Switcher (3D Storyline vs Versi PPT) */}
+          <div className="flex items-center p-1 rounded-xl bg-sky-100/90 border border-its-blue/20 shrink-0">
             <button
-              onClick={() => setShowStoryline(true)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg border border-its-gold/60 bg-gradient-to-r from-its-gold/20 to-its-blue/20 text-its-gold hover:text-white hover:border-its-gold text-xs font-mono font-bold shadow-its-gold transition-all cursor-pointer animate-pulse"
-              title="Mode Cerita & Bioskop SOKA (Tombol S)"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-its-gold" />
-              <span>Storyline (S)</span>
-            </button>
-
-            {/* Quality Mode Toggle (Tombol 'M') */}
-            {!is2DFallback && (
-              <button
-                onClick={cycleQualityMode}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg border border-its-blue/30 bg-its-darkNavy/80 hover:bg-its-blue/20 text-its-silver hover:text-white text-xs font-mono transition-all cursor-pointer"
-                title="Ganti Mode Kualitas Grafis (M)"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">
-                  {qualityMode === 'high' ? 'High' : qualityMode === 'perf' ? 'Perf' : 'Balanced'}
-                </span>
-                <kbd className="text-[9px] px-1 rounded bg-black/40 text-its-silver border border-white/10">M</kbd>
-              </button>
-            )}
-
-            {/* 3D / 2D Fallback Toggle (Tombol '2') */}
-            <button
-              onClick={() => setIs2DFallback(!is2DFallback)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-mono transition-all cursor-pointer ${
-                is2DFallback
-                  ? 'bg-its-darkNavy text-its-silver border-its-blue/30'
-                  : 'bg-its-blue/30 text-its-gold border-its-gold/50 shadow-its-glow'
+              onClick={() => {
+                setViewMode('story3d');
+                setIs2DFallback(false);
+              }}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                viewMode === 'story3d'
+                  ? 'bg-its-blue text-white shadow-sm'
+                  : 'text-its-navy hover:bg-white/70'
               }`}
-              title="Toggle 3D WebGL / 2D Fallback (2)"
+              title="Mode Analogi 3D & Storyline Interaktif (S)"
             >
-              <Eye className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{is2DFallback ? '2D Mode' : '3D WebGL'}</span>
-              <kbd className="text-[9px] px-1 rounded bg-black/40 text-its-silver border border-white/10">2</kbd>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>3D Storyline</span>
             </button>
 
-            {/* Reset Camera (Tombol 'R') */}
-            {!is2DFallback && (
-              <button
-                onClick={handleResetCamera}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg border border-its-blue/30 bg-its-darkNavy/80 hover:bg-its-blue/20 text-its-silver hover:text-white text-xs font-mono transition-all cursor-pointer"
-                title="Reset Posisi Kamera 3D (R)"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Reset</span>
-                <kbd className="text-[9px] px-1 rounded bg-black/40 text-its-silver border border-white/10">R</kbd>
-              </button>
-            )}
+            <button
+              onClick={() => setViewMode('ppt')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                viewMode === 'ppt'
+                  ? 'bg-its-blue text-white shadow-sm'
+                  : 'text-its-navy hover:bg-white/70'
+              }`}
+              title="Versi Slide Presentasi PPT Lengkap 25 Slide (S)"
+            >
+              <Presentation className="w-3.5 h-3.5" />
+              <span>Versi PPT (25 Slide)</span>
+            </button>
+          </div>
 
-            {/* Explore Orbit Mode (Tombol 'E') */}
+          {/* Right: Compact Single-Line Controls (Zero Wrapping!) */}
+          <div className="flex items-center gap-1.5 shrink-0">
             {!is2DFallback && (
               <button
                 onClick={() => {
                   setIsExploreMode(!isExploreMode);
                   if (!isExploreMode) setIsOverlayMinimized(false);
                 }}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-mono transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   isExploreMode
-                    ? 'bg-its-gold text-its-deepNavy border-its-gold font-bold shadow-its-gold'
-                    : 'bg-its-darkNavy/80 border-its-blue/30 text-its-silver hover:text-white'
+                    ? 'bg-its-gold text-its-navy border-amber-500 shadow-sm'
+                    : 'bg-white border-its-blue/25 text-its-navy hover:border-its-blue hover:bg-sky-50'
                 }`}
-                title="Toggle Orbit Drag & Zoom Bebas 3D (E)"
+                title="Toggle Orbit 360° & Zoom Bebas (E)"
               >
-                <Compass className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{isExploreMode ? 'Orbit Bebas' : 'Waypoint'}</span>
-                <kbd className="text-[9px] px-1 rounded bg-black/40 text-its-silver border border-white/10">E</kbd>
+                <Compass className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden lg:inline">{isExploreMode ? 'Orbit Aktif' : 'Orbit 360°'}</span>
+                <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">E</kbd>
               </button>
             )}
 
-            {/* Presenter Notes Modal (Tombol 'P') */}
+            {!is2DFallback && (
+              <button
+                onClick={handleResetCamera}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+                title="Reset Posisi Kamera 3D (R)"
+              >
+                <RotateCcw className="w-3.5 h-3.5 shrink-0 text-its-blue" />
+                <span className="hidden xl:inline">Reset</span>
+                <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">R</kbd>
+              </button>
+            )}
+
+            {viewMode === 'ppt' && (
+              <button
+                onClick={() => setIs2DFallback(!is2DFallback)}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  is2DFallback
+                    ? 'bg-its-navy text-white border-its-navy'
+                    : 'bg-white text-its-navy border-its-blue/25 hover:border-its-blue'
+                }`}
+                title="Toggle 3D WebGL / 2D Polos (2)"
+              >
+                <Eye className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden xl:inline">{is2DFallback ? '2D' : '3D'}</span>
+              </button>
+            )}
+
             <button
               onClick={() => setShowPresenter(true)}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg border border-its-blue/30 bg-its-darkNavy/80 hover:bg-its-blue/20 text-its-silver hover:text-white cursor-pointer"
-              title="Catatan Pembicara & Stopwatch Timer (P)"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold cursor-pointer whitespace-nowrap"
+              title="Catatan Presenter & Timer (P)"
             >
-              <FileText className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Presenter</span>
-              <kbd className="text-[9px] px-1 rounded bg-black/40 text-its-silver border border-white/10">P</kbd>
+              <FileText className="w-3.5 h-3.5 shrink-0 text-its-blue" />
+              <span className="hidden lg:inline">Presenter</span>
+              <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">P</kbd>
             </button>
 
-            {/* Slide TOC Menu (Tombol 'G') */}
             <button
               onClick={() => setShowGrid(true)}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg border border-its-blue/30 bg-its-darkNavy/80 hover:bg-its-blue/20 text-its-silver hover:text-white cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold cursor-pointer whitespace-nowrap"
               title="Daftar Isi 25 Slide (G)"
             >
-              <Grid className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Menu</span>
-              <kbd className="text-[9px] px-1 rounded bg-black/40 text-its-silver border border-white/10">G</kbd>
+              <Grid className="w-3.5 h-3.5 shrink-0 text-its-blue" />
+              <span className="hidden lg:inline">Menu</span>
+              <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">G</kbd>
             </button>
 
-            {/* Fullscreen (Tombol 'F') */}
             <button
               onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg border border-its-blue/30 bg-its-darkNavy/80 hover:bg-its-blue/20 text-its-silver hover:text-white cursor-pointer"
+              className="p-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy cursor-pointer shrink-0"
               title="Layar Penuh (F)"
             >
               {isFullscreen ? <Minimize className="w-3.5 h-3.5" /> : <Maximize className="w-3.5 h-3.5" />}
@@ -342,107 +351,124 @@ export const DeckShell: React.FC = () => {
         </header>
       )}
 
-      {/* Explore Mode Banner */}
-      {isExploreMode && !is2DFallback && (
-        <div className="relative z-20 bg-its-gold/20 border-b border-its-gold/40 text-its-gold px-4 py-1.5 text-xs font-mono flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 animate-spin text-its-gold" />
-            <span>
-              <strong>Mode Explore 3D Aktif:</strong> Klik & drag mouse untuk rotasi 360°, scroll mouse untuk zoom, sorot objek untuk inspeksi raycast.
+      {/* Explore Mode Banner (Crisp High-Contrast Daylight Style!) */}
+      {isExploreMode && !is2DFallback && !isHudHidden && (
+        <div className="relative z-30 shrink-0 bg-amber-100/95 border-b border-amber-400 text-its-navy px-4 py-1.5 text-xs font-mono flex items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-2 min-w-0">
+            <Compass className="w-4 h-4 text-amber-700 shrink-0" />
+            <span className="truncate">
+              <strong>Mode Orbit 360° Aktif:</strong> Klik & seret mouse untuk putar kepulauan 3D, scroll untuk zoom, klik objek untuk inspeksi.
             </span>
           </div>
-          <button
-            onClick={() => setIsOverlayMinimized(!isOverlayMinimized)}
-            className="px-2 py-0.5 rounded bg-its-gold text-its-deepNavy font-bold hover:bg-white transition-colors cursor-pointer"
-          >
-            {isOverlayMinimized ? 'Tampilkan Kartu Slide' : 'Minimalkan Kartu Slide'}
-          </button>
-        </div>
-      )}
-
-      {/* Main Slide Presentation Stage */}
-      <main className="flex-1 relative z-10 flex items-center justify-center p-3 md:p-6 overflow-hidden pointer-events-none">
-        <div
-          className={`w-full h-full max-w-6xl aspect-[16/9] max-h-[88vh] its-glass-heavy border border-its-blue/40 shadow-its-card rounded-3xl p-5 md:p-8 flex flex-col justify-between overflow-hidden transition-all duration-300 pointer-events-auto ${
-            isOverlayMinimized ? 'opacity-20 scale-95 hover:opacity-100' : 'opacity-100 scale-100'
-          }`}
-        >
-          <CurrentComponent />
-        </div>
-      </main>
-
-      {/* Bottom Deck Navigation Bar */}
-      {!isHudHidden && (
-        <footer className="relative z-20 h-14 px-6 its-glass border-t border-its-blue/30 flex items-center justify-between">
-          {/* Prev Button */}
-          <button
-            onClick={prevSlide}
-            disabled={currentSlide <= 1}
-            className="flex items-center gap-1.5 px-4 py-2 its-btn-secondary rounded-xl font-mono text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span>Prev</span>
-          </button>
-
-          {/* Slide Title & Progress */}
-          <div className="flex items-center gap-4 flex-1 max-w-xl mx-6">
-            <span className="font-mono text-xs font-extrabold text-its-gold whitespace-nowrap">
-              {currentSlide.toString().padStart(2, '0')} / {totalSlides}
-            </span>
-
-            <div className="flex-1 flex flex-col gap-1">
-              <div className="flex justify-between text-[11px] font-mono text-its-silver">
-                <span className="truncate max-w-[280px] font-bold text-white">{currentSlideObj.title}</span>
-                <span className="text-its-blue-light">{currentSlideObj.section}</span>
-              </div>
-              {/* Progress Bar with ITS Gold Glow */}
-              <div className="w-full h-2 bg-its-darkNavy/80 rounded-full overflow-hidden border border-its-blue/30">
-                <div
-                  className="h-full bg-gradient-to-r from-its-blue to-its-gold shadow-its-glow transition-all duration-300"
-                  style={{ width: `${(currentSlide / totalSlides) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Shortcuts Hint & Next Button */}
-          <div className="flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono text-its-silver/70">
-              <kbd className="px-1.5 py-0.5 rounded bg-its-darkNavy border border-its-blue/30 text-white font-bold">←</kbd>
-              <kbd className="px-1.5 py-0.5 rounded bg-its-darkNavy border border-its-blue/30 text-white font-bold">→</kbd>
-              <span>atau</span>
-              <kbd className="px-2 py-0.5 rounded bg-its-darkNavy border border-its-blue/30 text-white font-bold">Spasi</kbd>
-            </div>
-
+          {viewMode === 'ppt' && (
             <button
-              onClick={nextSlide}
-              disabled={currentSlide >= totalSlides}
-              className="flex items-center gap-1.5 px-5 py-2 its-btn-gold rounded-xl font-mono text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-its-gold"
+              onClick={() => setIsOverlayMinimized(!isOverlayMinimized)}
+              className="px-3 py-1 rounded-lg bg-its-navy text-white font-bold hover:bg-its-blue transition-colors cursor-pointer whitespace-nowrap shrink-0"
             >
-              <span>Next</span>
-              <ChevronRight className="w-4 h-4" />
+              {isOverlayMinimized ? 'Tampilkan Kartu Slide' : 'Sembunyikan Kartu Slide'}
             </button>
-          </div>
-        </footer>
+          )}
+        </div>
       )}
 
-      {/* Grid Modal / Table of Contents (G / Esc) */}
+      {/* MODE 1: FULL-SCREEN 3D STORYLINE & ANALOGY DOCK */}
+      {viewMode === 'story3d' && !isHudHidden && (
+        <StorylineOverlayDock
+          onWaypointChange={(wp) => setCurrentSlide(wp)}
+          onOpenPptAtSlide={(slideNum) => {
+            goToSlide(slideNum);
+            setViewMode('ppt');
+          }}
+          onOpenDiagramModal={() => setShowDiagramModal(true)}
+        />
+      )}
+
+      {/* MODE 2: VERSI PPT (25 SLIDE PRESENTASI LENGKAP) */}
+      {viewMode === 'ppt' && (
+        <>
+          <main className="flex-1 min-h-0 relative z-10 flex items-center justify-center px-4 py-3 md:px-6 md:py-4 overflow-hidden pointer-events-none">
+            <div
+              className={`w-full h-full max-w-6xl max-h-full its-glass-heavy rounded-2xl p-5 md:p-7 flex flex-col overflow-y-auto transition-all duration-300 pointer-events-auto ${
+                isOverlayMinimized ? 'opacity-10 scale-95 hover:opacity-95' : 'opacity-100 scale-100'
+              }`}
+            >
+              <CurrentComponent />
+            </div>
+          </main>
+
+          {/* Clean, Spacious Bottom Navigation Bar (Zero Overlap!) */}
+          {!isHudHidden && (
+            <footer className="relative z-30 h-16 shrink-0 px-5 its-glass-heavy border-t border-its-blue/20 flex items-center justify-between gap-4">
+              {/* Prev Button */}
+              <button
+                onClick={prevSlide}
+                disabled={currentSlide <= 1}
+                className="flex items-center gap-1.5 px-4 py-2 its-btn-secondary rounded-xl font-mono text-xs font-bold disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer shrink-0"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Prev</span>
+              </button>
+
+              {/* Center Progress & Slide Info */}
+              <div className="flex items-center gap-4 flex-1 max-w-2xl min-w-0">
+                <span className="px-2.5 py-1 rounded-lg bg-its-cover text-white font-mono text-xs font-extrabold whitespace-nowrap shrink-0">
+                  {currentSlide.toString().padStart(2, '0')} / {totalSlides}
+                </span>
+
+                <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between gap-2 text-xs font-mono">
+                    <span className="truncate font-extrabold text-its-navy">{currentSlideObj.title}</span>
+                    <span className="text-its-blue font-bold whitespace-nowrap hidden sm:inline">{currentSlideObj.section}</span>
+                  </div>
+                  <div className="w-full h-2 bg-sky-100 rounded-full overflow-hidden border border-its-blue/20">
+                    <div
+                      className="h-full bg-gradient-to-r from-its-blue to-its-gold transition-all duration-300 rounded-full"
+                      style={{ width: `${(currentSlide / totalSlides) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Shortcuts & Next Button */}
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono text-its-silver">
+                  <kbd className="px-1.5 py-0.5 rounded bg-sky-50 border border-its-blue/25 text-its-navy font-bold">←</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-sky-50 border border-its-blue/25 text-its-navy font-bold">→</kbd>
+                  <span>atau</span>
+                  <kbd className="px-2 py-0.5 rounded bg-sky-50 border border-its-blue/25 text-its-navy font-bold">Spasi</kbd>
+                </div>
+
+                <button
+                  onClick={nextSlide}
+                  disabled={currentSlide >= totalSlides}
+                  className="flex items-center gap-1.5 px-5 py-2 its-btn-gold rounded-xl font-mono text-xs font-extrabold disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer shadow-its-gold"
+                >
+                  <span>Next</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </footer>
+          )}
+        </>
+      )}
+
+      {/* Grid Modal / Table of Contents (G) */}
       {showGrid && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-6">
-          <div className="its-glass-heavy border border-its-blue/40 shadow-its-glow rounded-3xl max-w-4xl w-full max-h-[85vh] p-6 flex flex-col">
-            <div className="flex items-center justify-between pb-3 border-b border-its-blue/30 mb-4">
+        <div className="fixed inset-0 z-50 bg-its-navy/45 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="its-glass-heavy rounded-3xl max-w-4xl w-full max-h-[85vh] p-6 flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-its-blue/20 mb-4">
               <div className="flex items-center gap-2.5">
-                <span className="p-2 rounded-xl bg-its-blue/30 border border-its-blue text-its-gold">
+                <span className="p-2 rounded-xl bg-its-blue text-white">
                   <Grid className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-xl text-white">Daftar Isi Slide Deck ({totalSlides} Slide)</h3>
-                  <span className="text-xs font-mono text-its-silver">Pilih slide untuk melompat langsung</span>
+                  <h3 className="font-extrabold text-xl text-its-navy">Daftar Isi Presentasi ({totalSlides} Slide)</h3>
+                  <span className="text-xs font-mono text-its-silver">Klik kartu untuk membuka slide di Versi PPT</span>
                 </div>
               </div>
               <button
                 onClick={() => setShowGrid(false)}
-                className="p-1.5 rounded-xl border border-its-blue/30 bg-its-darkNavy hover:bg-its-blue/20 text-its-silver hover:text-white cursor-pointer"
+                className="p-1.5 rounded-xl border border-its-blue/25 bg-white hover:bg-sky-50 text-its-navy cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -454,26 +480,31 @@ export const DeckShell: React.FC = () => {
                   key={s.id}
                   onClick={() => {
                     goToSlide(s.id);
+                    setViewMode('ppt');
                     setShowGrid(false);
                   }}
                   className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
                     currentSlide === s.id
-                      ? 'bg-its-blue/30 border-its-gold text-white font-bold shadow-its-glow scale-102'
-                      : 'bg-its-darkNavy/70 border-its-blue/20 hover:border-its-blue hover:bg-its-navy/60 text-its-silver'
+                      ? 'bg-its-blue text-white border-its-blue font-bold shadow-its-glow'
+                      : 'bg-white border-its-blue/20 hover:border-its-blue hover:bg-sky-50 text-its-navy'
                   }`}
                 >
                   <div className="flex items-center justify-between text-[10px] font-mono mb-1">
-                    <span className="font-black text-its-gold">#{s.id.toString().padStart(2, '0')}</span>
-                    <span className="text-its-blue-light truncate max-w-[65px]">{s.section.split('·')[0]}</span>
+                    <span className={`font-black ${currentSlide === s.id ? 'text-its-gold' : 'text-its-blue'}`}>
+                      #{s.id.toString().padStart(2, '0')}
+                    </span>
+                    <span className={`truncate max-w-[65px] ${currentSlide === s.id ? 'text-sky-100' : 'text-its-silver'}`}>
+                      {s.section.split('·')[0]}
+                    </span>
                   </div>
-                  <div className="text-xs font-bold text-white line-clamp-2">{s.title}</div>
+                  <div className="text-xs font-bold line-clamp-2">{s.title}</div>
                 </button>
               ))}
             </div>
 
-            <div className="pt-3 mt-3 border-t border-its-blue/20 text-xs font-mono text-its-silver flex justify-between">
-              <span>Klik kartu slide untuk navigasi</span>
-              <span>Tekan <kbd className="px-1.5 py-0.5 rounded bg-its-darkNavy border border-its-blue/40 font-bold text-white">Esc</kbd> untuk menutup</span>
+            <div className="pt-3 mt-3 border-t border-its-blue/15 text-xs font-mono text-its-silver flex justify-between">
+              <span>Klik kartu slide untuk navigasi langsung</span>
+              <span>Tekan <kbd className="px-1.5 py-0.5 rounded bg-sky-50 border border-its-blue/30 font-bold text-its-navy">Esc</kbd> untuk menutup</span>
             </div>
           </div>
         </div>
@@ -481,26 +512,25 @@ export const DeckShell: React.FC = () => {
 
       {/* Presenter Notes Modal (P) */}
       {showPresenter && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-6">
-          <div className="its-glass-heavy border border-its-blue/40 shadow-its-glow rounded-3xl max-w-2xl w-full p-6 flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between pb-3 border-b border-its-blue/30 mb-4">
+        <div className="fixed inset-0 z-50 bg-its-navy/45 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="its-glass-heavy rounded-3xl max-w-2xl w-full p-6 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between pb-3 border-b border-its-blue/20 mb-4">
               <div className="flex items-center gap-2.5">
-                <span className="p-2 rounded-xl bg-its-blue/30 border border-its-blue text-its-gold">
+                <span className="p-2 rounded-xl bg-its-blue text-white">
                   <FileText className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-lg text-white">Catatan Presenter (Slide {currentSlide})</h3>
-                  <span className="text-xs font-mono text-its-blue-light">{currentNotes?.section}</span>
+                  <h3 className="font-extrabold text-lg text-its-navy">Catatan Presenter (Slide {currentSlide})</h3>
+                  <span className="text-xs font-mono text-its-blue font-semibold">{currentNotes?.section}</span>
                 </div>
               </div>
 
-              {/* Presentation Timer */}
-              <div className="flex items-center gap-2 px-3 py-1 bg-its-darkNavy border border-its-blue/40 rounded-xl font-mono text-sm font-black">
-                <Clock className="w-4 h-4 text-its-gold" />
-                <span className="text-white">{formatTimer(timerSeconds)}</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-sky-50 border border-its-blue/30 rounded-xl font-mono text-sm font-black text-its-navy">
+                <Clock className="w-4 h-4 text-its-blue" />
+                <span>{formatTimer(timerSeconds)}</span>
                 <button
                   onClick={() => setIsTimerRunning(!isTimerRunning)}
-                  className="p-1 hover:text-its-gold cursor-pointer"
+                  className="p-1 hover:text-its-blue cursor-pointer"
                   title={isTimerRunning ? 'Pause Timer' : 'Start Timer'}
                 >
                   {isTimerRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
@@ -510,7 +540,7 @@ export const DeckShell: React.FC = () => {
                     setTimerSeconds(0);
                     setIsTimerRunning(false);
                   }}
-                  className="p-1 hover:text-red-400 cursor-pointer"
+                  className="p-1 hover:text-red-600 cursor-pointer"
                   title="Reset Timer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -519,26 +549,26 @@ export const DeckShell: React.FC = () => {
 
               <button
                 onClick={() => setShowPresenter(false)}
-                className="p-1.5 rounded-xl border border-its-blue/30 bg-its-darkNavy hover:bg-its-blue/20 text-its-silver hover:text-white cursor-pointer ml-2"
+                className="p-1.5 rounded-xl border border-its-blue/25 bg-white hover:bg-sky-50 text-its-navy cursor-pointer ml-2"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-4 my-2">
-              <div className="p-3 bg-its-darkNavy/80 rounded-xl border border-its-blue/30">
-                <span className="text-xs font-mono font-bold text-its-silver/80 block mb-1">Judul Slide Aktif:</span>
-                <h4 className="font-extrabold text-base text-white">{currentSlideObj.title}</h4>
+              <div className="p-3 bg-sky-50 rounded-xl border border-its-blue/20">
+                <span className="text-xs font-mono font-bold text-its-blue block mb-1">Judul Slide Aktif:</span>
+                <h4 className="font-extrabold text-base text-its-navy">{currentSlideObj.title}</h4>
               </div>
 
               <div>
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-its-gold block mb-2">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-its-blue block mb-2">
                   Poin Bicara untuk Rayhan:
                 </span>
                 <ul className="space-y-2.5">
                   {currentNotes?.notes.map((note, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-its-silver leading-relaxed">
-                      <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-full bg-its-blue/30 border border-its-blue text-its-gold flex-none mt-0.5">
+                    <li key={idx} className="flex items-start gap-2 text-sm text-its-navy leading-relaxed">
+                      <span className="font-mono text-xs font-black px-2 py-0.5 rounded-full bg-its-gold text-its-navy flex-none mt-0.5">
                         {idx + 1}
                       </span>
                       <span>{note}</span>
@@ -547,20 +577,19 @@ export const DeckShell: React.FC = () => {
                 </ul>
               </div>
 
-              {/* Next Slide Preview */}
               {currentSlide < totalSlides && (
-                <div className="p-3 bg-its-navy/60 rounded-xl border border-its-blue/20 font-mono text-xs">
-                  <span className="text-its-silver/70 block text-[10px]">Slide Selanjutnya ({currentSlide + 1}):</span>
-                  <span className="font-bold text-its-gold">{SLIDES_REGISTRY[currentSlide].title}</span>
+                <div className="p-3 bg-its-slate rounded-xl border border-its-blue/15 font-mono text-xs">
+                  <span className="text-its-silver block text-[10px]">Slide Selanjutnya ({currentSlide + 1}):</span>
+                  <span className="font-bold text-its-navy">{SLIDES_REGISTRY[currentSlide].title}</span>
                 </div>
               )}
             </div>
 
-            <div className="pt-3 border-t border-its-blue/20 flex items-center justify-between text-xs font-mono text-its-silver">
+            <div className="pt-3 border-t border-its-blue/15 flex items-center justify-between text-xs font-mono text-its-silver">
               <span>Estimasi Durasi Slide: ~{currentNotes?.durationMinutes || 1.5} menit</span>
               <button
                 onClick={() => setShowPresenter(false)}
-                className="its-btn-primary px-4 py-1.5 rounded-xl text-xs font-mono font-bold"
+                className="its-btn-primary px-4 py-1.5 rounded-xl text-xs font-mono font-bold cursor-pointer"
               >
                 Tutup (P)
               </button>
@@ -569,11 +598,11 @@ export const DeckShell: React.FC = () => {
         </div>
       )}
 
-      {/* Storyline Mode Modal (S) */}
+      {/* Optional Diagram Explainer Modal */}
       <StorylineModal
-        isOpen={showStoryline}
-        onClose={() => setShowStoryline(false)}
-        onWaypointChange={(wp) => goToSlide(wp)}
+        isOpen={showDiagramModal}
+        onClose={() => setShowDiagramModal(false)}
+        onWaypointChange={(wp) => setCurrentSlide(wp)}
       />
     </div>
   );

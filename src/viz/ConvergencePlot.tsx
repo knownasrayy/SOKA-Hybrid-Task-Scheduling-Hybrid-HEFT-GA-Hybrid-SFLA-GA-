@@ -50,13 +50,13 @@ export const ConvergencePlot: React.FC<ConvergencePlotProps> = ({
   const scaleY = (y: number) => padT + (1 - (y - minY) / (maxY - minY || 1)) * plotH;
 
   return (
-    <div className="its-glass rounded-2xl p-4 border border-its-blue/30 shadow-its-card">
-      <div className="flex items-center justify-between text-xs font-mono text-its-silver mb-2 border-b border-its-blue/20 pb-2">
-        <span className="font-bold text-white flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-its-gold animate-pulse" />
+    <div className="its-glass rounded-2xl p-4 border border-its-blue/25 shadow-its-card">
+      <div className="flex items-center justify-between text-xs font-mono text-its-silver mb-2 border-b border-its-blue/15 pb-2">
+        <span className="font-bold text-its-navy flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-its-gold" />
           Kurva Konvergensi Multi-Algoritma
         </span>
-        <span className="text-its-blue-light">Evaluasi vs {yLabel}</span>
+        <span className="text-its-blue font-semibold">Evaluasi vs {yLabel}</span>
       </div>
 
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto max-h-[260px]">
@@ -71,14 +71,14 @@ export const ConvergencePlot: React.FC<ConvergencePlotProps> = ({
                 y1={yPos}
                 x2={width - padR}
                 y2={yPos}
-                stroke="rgba(117,189,224,0.18)"
+                stroke="rgba(18,123,190,0.16)"
                 strokeDasharray="3 3"
               />
               <text
                 x={padL - 8}
                 y={yPos + 4}
                 textAnchor="end"
-                className="font-mono text-[10px] fill-its-silver/80"
+                className="font-mono text-[10px] fill-its-silver"
               >
                 {yVal.toFixed(1)}
               </text>
@@ -92,12 +92,12 @@ export const ConvergencePlot: React.FC<ConvergencePlotProps> = ({
           const xPos = scaleX(xVal);
           return (
             <g key={idx}>
-              <line x1={xPos} y1={height - padB} x2={xPos} y2={height - padB + 5} stroke="#75BDE0" />
+              <line x1={xPos} y1={height - padB} x2={xPos} y2={height - padB + 5} stroke="#127BBE" />
               <text
                 x={xPos}
                 y={height - padB + 18}
                 textAnchor="middle"
-                className="font-mono text-[10px] fill-its-silver/80"
+                className="font-mono text-[10px] fill-its-silver"
               >
                 {Math.round(xVal)}
               </text>
@@ -121,7 +121,6 @@ export const ConvergencePlot: React.FC<ConvergencePlotProps> = ({
                 strokeWidth={2.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                style={{ filter: `drop-shadow(0 0 6px ${s.color}66)` }}
               />
               {/* Endpoint marker */}
               {s.points.length > 0 && (
@@ -130,7 +129,7 @@ export const ConvergencePlot: React.FC<ConvergencePlotProps> = ({
                   cy={scaleY(s.points[s.points.length - 1].val)}
                   r={4.5}
                   fill={s.color}
-                  stroke="#0B132B"
+                  stroke="#FFFFFF"
                   strokeWidth={2}
                 />
               )}
@@ -140,11 +139,11 @@ export const ConvergencePlot: React.FC<ConvergencePlotProps> = ({
       </svg>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-3 mt-2 pt-2 border-t border-its-blue/20 text-xs font-mono">
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-2 pt-2 border-t border-its-blue/15 text-xs font-mono">
         {series.map((s) => (
-          <div key={s.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-its-darkNavy/60 border border-its-blue/30 text-its-silver">
-            <span className="w-2.5 h-2.5 rounded-full shadow-its-glow" style={{ backgroundColor: s.color }} />
-            <span className="font-semibold text-white">{s.name}</span>
+          <div key={s.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-its-slate border border-its-blue/20 text-its-navy">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+            <span className="font-semibold text-its-navy">{s.name}</span>
           </div>
         ))}
       </div>

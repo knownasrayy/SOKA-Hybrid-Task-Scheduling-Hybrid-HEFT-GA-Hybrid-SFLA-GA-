@@ -29,9 +29,9 @@ export const SflaPondView: React.FC<SflaPondViewProps> = ({
   });
 
   return (
-    <div className="its-glass border border-its-blue-light/30 rounded-xl p-4 shadow-its-card">
-      <div className="flex items-center justify-between text-xs font-mono text-its-blue-light mb-3 border-b border-its-blue-light/20 pb-2">
-        <span className="font-bold text-its-silver">Kolam Katak SFLA (Partisi {memeplexCount} Memeplex)</span>
+    <div className="its-glass rounded-xl p-4">
+      <div className="flex items-center justify-between text-xs font-mono text-its-blue mb-3 border-b border-its-blue/15 pb-2">
+        <span className="font-bold text-its-navy">Kolam Katak SFLA (Partisi {memeplexCount} Memeplex)</span>
         <span>Evolusi Lokal dalam Memeplex → Pertukaran Global (Shuffle)</span>
       </div>
 
@@ -44,15 +44,15 @@ export const SflaPondView: React.FC<SflaPondViewProps> = ({
               key={memIdx}
               className={`p-3 rounded-xl border transition-all ${
                 isActive
-                  ? 'bg-its-dark/80 border-its-blue-light/50 shadow-its-glow'
-                  : 'opacity-40 bg-its-navy/40 border-its-blue-light/20'
+                  ? 'bg-white border-its-blue/40 shadow-sm'
+                  : 'opacity-50 bg-its-slate border-its-blue/15'
               }`}
             >
-              <div className="flex items-center justify-between font-mono text-xs font-bold mb-2 pb-1 border-b border-its-blue-light/20">
+              <div className="flex items-center justify-between font-mono text-xs font-bold mb-2 pb-1 border-b border-its-blue/15">
                 <span style={{ color: memColors[memIdx % memColors.length] }}>
                   Memeplex #{memIdx + 1}
                 </span>
-                <span className="text-[10px] text-its-blue-light">{group.length} Katak</span>
+                <span className="text-[10px] text-its-silver">{group.length} Katak</span>
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -65,10 +65,10 @@ export const SflaPondView: React.FC<SflaPondViewProps> = ({
                       key={frog.id}
                       className={`flex items-center justify-between px-2 py-1 rounded border text-xs font-mono ${
                         isMemBest
-                          ? 'bg-its-tosca/20 border-its-tosca text-its-tosca font-black'
+                          ? 'bg-teal-50 border-its-tosca text-its-tosca font-black'
                           : isMemWorst
-                          ? 'bg-its-crusta/20 border-its-crusta text-its-crusta font-bold'
-                          : 'bg-its-navy/70 border-its-blue-light/20 text-its-silver'
+                          ? 'bg-orange-50 border-its-crusta text-its-crusta font-bold'
+                          : 'bg-its-slate border-its-blue/15 text-its-navy'
                       }`}
                     >
                       <span>
