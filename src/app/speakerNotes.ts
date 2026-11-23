@@ -12,7 +12,7 @@ export const SPEAKER_NOTES: Record<number, SpeakerNote> = {
     title: 'Cover & Pembuka',
     section: 'Bagian A · Pembuka',
     notes: [
-      'Ucapkan salam dan perkenalkan diri: Rayhan (5027221019) dari kelas SOKA.',
+      'Ucapkan salam dan perkenalkan tim Kelompok 6: Rayhan Agnan Kusuma, Ahmad Idza Anafin, Andi Naufal Zaki, Alnico Virendra Kitaro Diaz, dan Zidny Ilman Nafian dari kelas SOKA C.',
       'Sampaikan judul: Komparasi Hybrid HEFT-GA vs Hybrid SFLA-GA untuk Cloud Task Scheduling.',
       'Tegaskan bahwa website ini dirancang untuk Demo 1 (Minggu 13) dan Demo 2 (Minggu 14), dengan simulator terintegrasi yang menghitung data secara nyata tanpa hardcode.'
     ],

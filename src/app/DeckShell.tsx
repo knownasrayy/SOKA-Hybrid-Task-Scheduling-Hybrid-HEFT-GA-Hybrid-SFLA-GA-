@@ -683,7 +683,7 @@ export const DeckShell: React.FC = () => {
 
               <div>
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-its-blue block mb-2">
-                  Poin Bicara untuk Rayhan:
+                  Poin Bicara Presenter (Kelompok 6):
                 </span>
                 <ul className="space-y-2.5">
                   {currentNotes?.notes.map((note, idx) => (

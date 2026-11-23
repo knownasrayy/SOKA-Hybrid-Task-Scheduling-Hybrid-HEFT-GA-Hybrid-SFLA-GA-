@@ -5,7 +5,7 @@
 | Nama proyek | **HybridLab 3D** (ekstensi dari PRD HybridLab) |
 | Dokumen induk | `PRD_Presentasi_Web_Hybrid_HEFT-GA_vs_SFLA-GA.md` (alur slide, simulator, algoritma, aturan pemenang) |
 | Mata kuliah | Strategi Optimasi Komputasi Awan (Demo 1 minggu 13, Demo 2 minggu 14) |
-| Pemilik | Rayhan |
+| Pemilik | Kelompok 6 (Rayhan Agnan Kusuma, Ahmad Idza Anafin, Andi Naufal Zaki, Alnico Virendra Kitaro Diaz, Zidny Ilman Nafian) |
 | Target pelaksana | Claude Code (Opus 5.5 / Fable) |
 | Status | Draft v1.0 |
 

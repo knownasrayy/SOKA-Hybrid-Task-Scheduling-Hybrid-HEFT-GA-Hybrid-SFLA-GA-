@@ -1,6 +1,13 @@
 # HybridLab 3D · Website Presentasi Interaktif Algoritma Hybrid
 > **Mata Kuliah:** Strategi Optimasi Komputasi Awan (SOKA) — Tugas Minggu 13–14  
-> **Presenter:** Rayhan (5027221019) · Departemen Teknologi Informasi, Institut Teknologi Sepuluh Nopember (ITS)  
+> **Dosen Pengampu:** Henning Titi Ciptaningtyas, S.Kom, M.Kom.  
+> **Disusun oleh Kelompok 6 (Kelas C):**  
+> 1. Rayhan Agnan Kusuma (5027241102) — Presenter  
+> 2. Ahmad Idza Anafin (5027241017)  
+> 3. Andi Naufal Zaki (5027241059)  
+> 4. Alnico Virendra Kitaro Diaz  
+> 5. Zidny Ilman Nafian (5027221072)  
+> **Institusi:** Departemen Teknologi Informasi, Institut Teknologi Sepuluh Nopember (ITS), Surabaya  
 > **Visual Identity:** Panduan Identitas Visual Resmi ITS 2026 (*Biru Lambang ITS #127BBE, Kuning Emas Wijayakusuma #FDBB16, Putih Perak Tugu Pahlawan #F3F4F6, Cyber Navy #0B132B*)  
 > **Target:** Presentasi Demo 1 (Minggu 13) & Demo 2 (Minggu 14)  
 

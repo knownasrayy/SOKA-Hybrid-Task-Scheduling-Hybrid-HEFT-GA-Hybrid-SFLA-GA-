@@ -4,7 +4,7 @@
 |---|---|
 | Nama proyek | **HybridLab** — Presentasi Web Interaktif Algoritma Hybrid |
 | Mata kuliah | Strategi Optimasi Komputasi Awan (Tugas Minggu 13–14) |
-| Pemilik | Rayhan |
+| Pemilik | Kelompok 6 (Rayhan Agnan Kusuma, Ahmad Idza Anafin, Andi Naufal Zaki, Alnico Virendra Kitaro Diaz, Zidny Ilman Nafian) |
 | Target pelaksana | Claude Code (Opus 5.5 / Fable) |
 | Status | Draft v1.0 |
 | Bahasa antarmuka | Bahasa Indonesia (istilah teknis tetap bahasa Inggris) |
