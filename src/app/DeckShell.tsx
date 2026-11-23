@@ -178,6 +178,41 @@ export const DeckShell: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentSlide, viewMode, showDiagramModal]);
 
+  // Touch Swipe for mobile PPT navigation (Swipe Left -> Next, Swipe Right -> Prev)
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (viewMode !== 'ppt' || isExploreMode) return;
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+
+      if (Math.abs(diffX) > 60 && Math.abs(diffY) < 60) {
+        if (diffX < 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [viewMode, isExploreMode, currentSlide, totalSlides]);
+
   // Timer Tick
   useEffect(() => {
     if (!isTimerRunning) return;
@@ -228,59 +263,64 @@ export const DeckShell: React.FC = () => {
         </button>
       )}
 
-      {/* Clean Single-Row Top Header (Bright Frosted ITS Identity 2026) */}
+      {/* Clean Single-Row Top Header (Bright Frosted ITS Identity 2026 - Responsive Mobile) */}
       {!isHudHidden && (
-        <header className="relative z-30 h-14 shrink-0 px-4 md:px-5 flex items-center justify-between gap-3 border-b border-its-blue/20 its-glass-heavy text-xs font-mono">
+        <header className="relative z-30 h-14 shrink-0 px-2.5 sm:px-4 md:px-5 flex items-center justify-between gap-1.5 sm:gap-3 border-b border-its-blue/20 its-glass-heavy text-xs font-mono">
           {/* Left: Official ITS Brand Badge */}
-          <div className="flex items-center gap-2.5 shrink-0">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-its-cover text-white shadow-sm whitespace-nowrap">
-              <span className="w-2.5 h-2.5 rounded-full bg-its-gold" />
-              <span className="font-extrabold tracking-wider text-xs">ITS HYBRIDLAB</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-its-blue text-white font-bold">SOKA</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-xl bg-its-cover text-white shadow-sm whitespace-nowrap">
+              <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-its-gold shrink-0" />
+              <span className="font-extrabold tracking-wider text-xs">
+                <span className="inline sm:hidden">HYBRIDLAB</span>
+                <span className="hidden sm:inline">ITS HYBRIDLAB</span>
+              </span>
+              <span className="hidden md:inline text-[10px] px-1.5 py-0.5 rounded bg-its-blue text-white font-bold">SOKA</span>
             </div>
           </div>
 
           {/* Center: Prominent Two-Mode Switcher (3D Storyline vs Versi PPT) */}
-          <div className="flex items-center p-1 rounded-xl bg-sky-100/90 border border-its-blue/20 shrink-0">
+          <div className="flex items-center p-0.5 sm:p-1 rounded-xl bg-sky-100/90 border border-its-blue/20 shrink-0">
             <button
               onClick={() => {
                 setViewMode('story3d');
                 setIs2DFallback(false);
               }}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 viewMode === 'story3d'
                   ? 'bg-its-blue text-white shadow-sm'
                   : 'text-its-navy hover:bg-white/70'
               }`}
               title="Mode Analogi 3D & Storyline Interaktif (S)"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>3D Storyline</span>
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">3D Storyline</span>
+              <span className="sm:hidden">3D</span>
             </button>
 
             <button
               onClick={() => setViewMode('ppt')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 viewMode === 'ppt'
                   ? 'bg-its-blue text-white shadow-sm'
                   : 'text-its-navy hover:bg-white/70'
               }`}
               title="Versi Slide Presentasi PPT Lengkap 25 Slide (S)"
             >
-              <Presentation className="w-3.5 h-3.5" />
-              <span>Versi PPT (25 Slide)</span>
+              <Presentation className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Versi PPT (25 Slide)</span>
+              <span className="sm:hidden">PPT</span>
             </button>
           </div>
 
-          {/* Right: Compact Single-Line Controls (Zero Wrapping!) */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Right: Compact Single-Line Controls (Responsive) */}
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             {!is2DFallback && (
               <button
                 onClick={() => {
                   setIsExploreMode(!isExploreMode);
                   if (!isExploreMode) setIsOverlayMinimized(false);
                 }}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   isExploreMode
                     ? 'bg-its-gold text-its-navy border-amber-500 shadow-sm'
                     : 'bg-white border-its-blue/25 text-its-navy hover:border-its-blue hover:bg-sky-50'
@@ -289,26 +329,26 @@ export const DeckShell: React.FC = () => {
               >
                 <Compass className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden lg:inline">{isExploreMode ? 'Orbit Aktif' : 'Orbit 360°'}</span>
-                <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">E</kbd>
+                <kbd className="hidden xl:inline text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">E</kbd>
               </button>
             )}
 
             {!is2DFallback && (
               <button
                 onClick={handleResetCamera}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
                 title="Reset Posisi Kamera 3D (R)"
               >
                 <RotateCcw className="w-3.5 h-3.5 shrink-0 text-its-blue" />
                 <span className="hidden xl:inline">Reset</span>
-                <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">R</kbd>
+                <kbd className="hidden xl:inline text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">R</kbd>
               </button>
             )}
 
             {viewMode === 'ppt' && (
               <button
                 onClick={() => setIs2DFallback(!is2DFallback)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   is2DFallback
                     ? 'bg-its-navy text-white border-its-navy'
                     : 'bg-white text-its-navy border-its-blue/25 hover:border-its-blue'
@@ -322,22 +362,22 @@ export const DeckShell: React.FC = () => {
 
             <button
               onClick={() => setShowPresenter(true)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold cursor-pointer whitespace-nowrap"
+              className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold cursor-pointer whitespace-nowrap"
               title="Catatan Presenter & Timer (P)"
             >
               <FileText className="w-3.5 h-3.5 shrink-0 text-its-blue" />
               <span className="hidden lg:inline">Presenter</span>
-              <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">P</kbd>
+              <kbd className="hidden xl:inline text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">P</kbd>
             </button>
 
             <button
               onClick={() => setShowGrid(true)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold cursor-pointer whitespace-nowrap"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg border border-its-blue/25 bg-white hover:bg-sky-50 hover:border-its-blue text-its-navy text-xs font-bold cursor-pointer whitespace-nowrap"
               title="Daftar Isi 25 Slide (G)"
             >
               <Grid className="w-3.5 h-3.5 shrink-0 text-its-blue" />
               <span className="hidden lg:inline">Menu</span>
-              <kbd className="text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">G</kbd>
+              <kbd className="hidden xl:inline text-[9px] px-1 rounded bg-its-navy/10 text-its-navy font-bold">G</kbd>
             </button>
 
             <button

@@ -169,10 +169,53 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
       }
     };
 
+    let touchStartDist = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      if (!isExploreRef.current) return;
+      if (e.touches.length === 1) {
+        isDragging.current = true;
+        dragDistance.current = 0;
+        previousMousePosition.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        isDragging.current = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        touchStartDist = Math.sqrt(dx * dx + dy * dy);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isExploreRef.current) return;
+      if (e.touches.length === 1 && isDragging.current) {
+        const deltaX = e.touches[0].clientX - previousMousePosition.current.x;
+        const deltaY = e.touches[0].clientY - previousMousePosition.current.y;
+        dragDistance.current += Math.abs(deltaX) + Math.abs(deltaY);
+
+        orbitTheta.current -= deltaX * 0.008;
+        orbitPhi.current = Math.max(0.15, Math.min(Math.PI / 2.05, orbitPhi.current - deltaY * 0.008));
+
+        previousMousePosition.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const factor = (touchStartDist - dist) * 0.06;
+        orbitRadius.current = Math.max(12, Math.min(75, orbitRadius.current + factor));
+        touchStartDist = dist;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      isDragging.current = false;
+    };
+
     window.addEventListener('mousemove', handlePointerMove);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('click', handleClick);
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd);
     container.addEventListener('wheel', handleWheel, { passive: false });
 
     const handleResize = () => {
@@ -228,6 +271,9 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('click', handleClick);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('wheel', handleWheel);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();

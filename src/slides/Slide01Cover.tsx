@@ -25,11 +25,11 @@ export const Slide01Cover: React.FC = () => {
           <span>Presentasi Web Interaktif Algoritma Hybrid</span>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-black text-ink leading-tight tracking-tight mb-4">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-ink leading-tight tracking-tight mb-3 sm:mb-4">
           Hybrid <Highlight color="blue">HEFT-GA</Highlight> vs Hybrid <Highlight color="green">SFLA-GA</Highlight> untuk Cloud Task Scheduling.
         </h1>
 
-        <p className="text-base md:text-lg text-muted font-medium leading-relaxed max-w-2xl mb-6">
+        <p className="text-sm sm:text-base md:text-lg text-muted font-medium leading-relaxed max-w-2xl mb-4 sm:mb-6">
           Eksplorasi mendalam, simulasi berbasis browser tanpa hardcode, penentuan pemenang berbasis data, dan perbandingan 3 arah dengan baseline.
         </p>
 

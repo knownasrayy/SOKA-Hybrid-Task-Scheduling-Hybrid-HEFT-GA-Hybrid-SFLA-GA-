@@ -47,9 +47,9 @@ export const Slide17SimulatorLive: React.FC = () => {
   return (
     <div className="flex flex-col justify-between h-full p-2">
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <Badge label="17 · SIMULATOR LIVE" color="yellow" />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => simManager.run(problem, 30)}
               disabled={isRunning}
@@ -58,10 +58,12 @@ export const Slide17SimulatorLive: React.FC = () => {
               <RotateCw className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : ''}`} />
               <span>{isRunning ? `Menghitung (${progress.percent}%)` : 'Hitung Ulang 30 Run'}</span>
             </button>
-            <span className="font-mono text-xs text-muted">Dataset: {problem.name}</span>
+            <span className="font-mono text-[11px] sm:text-xs text-muted truncate max-w-[180px] sm:max-w-none">
+              Dataset: {problem.name}
+            </span>
           </div>
         </div>
-        <h2 className="text-3xl font-black text-ink tracking-tight mb-2">
+        <h2 className="text-2xl sm:text-3xl font-black text-ink tracking-tight mb-2">
           Simulasi Nyata: <Highlight color="blue">HEFT-GA</Highlight> vs <Highlight color="green">SFLA-GA</Highlight> di Browser.
         </h2>
       </div>

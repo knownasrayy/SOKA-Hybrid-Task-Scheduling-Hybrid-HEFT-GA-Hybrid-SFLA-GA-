@@ -152,7 +152,7 @@ export const StorylineOverlayDock: React.FC<StorylineOverlayDockProps> = ({
           isExploreMode ? 'top-[96px]' : 'top-[64px]'
         }`}
       >
-        <div className="pointer-events-auto its-glass rounded-2xl px-3 py-1.5 flex items-center gap-1.5 shadow-its-card">
+        <div className="pointer-events-auto its-glass rounded-2xl px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 shadow-its-card overflow-x-auto max-w-full scrollbar-none">
           <MapPin className="w-3.5 h-3.5 text-its-blue shrink-0" />
           <span className="text-[11px] font-mono font-bold text-its-silver mr-1 hidden sm:inline">Lompat Pulau:</span>
           {quickIslands.map((isl) => (
@@ -175,8 +175,8 @@ export const StorylineOverlayDock: React.FC<StorylineOverlayDockProps> = ({
       </div>
 
       {/* 2. Bottom Floating Storyline Narrator Dock (Directly Anchored to Bottom: Never Cut Off!) */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-3 md:bottom-5 z-20 flex justify-center px-3 sm:px-4 md:px-6">
-        <div className="pointer-events-auto w-full max-w-4xl its-glass-heavy rounded-2xl p-3 sm:p-4 shadow-its-card border border-its-blue/30 max-h-[38vh] flex flex-col justify-between">
+      <div className="pointer-events-none fixed inset-x-0 bottom-2 sm:bottom-3 md:bottom-5 z-20 flex justify-center px-2 sm:px-4 md:px-6">
+        <div className="pointer-events-auto w-full max-w-4xl its-glass-heavy rounded-2xl p-2.5 sm:p-4 shadow-its-card border border-its-blue/30 max-h-[42vh] flex flex-col justify-between overflow-y-auto">
           {/* Chapter Pills Row */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 border-b border-its-blue/15 scrollbar-none">
             {STORYLINE_CHAPTERS.map((ch, idx) => {
